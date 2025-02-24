@@ -1,7 +1,6 @@
 package com.example.marketplacemain.marketplacemain.autenticacion.entities;
 
 import java.util.Date;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,7 +13,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 
@@ -40,6 +38,8 @@ public class User {
 
     private String nombre;
     private String apellidos;
+
+    private String tokenValue;
 
     @Column(unique = true)
     private String email;
@@ -258,6 +258,17 @@ public class User {
         this.urlImage = urlImage;
     }
 
+
+    public String getTokenValue() {
+        return tokenValue;
+    }
+
+
+    public void setTokenValue(String tokenValue) {
+        this.tokenValue = tokenValue;
+    }
+
+    
     
 
 

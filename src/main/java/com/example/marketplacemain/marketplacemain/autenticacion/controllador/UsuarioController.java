@@ -38,10 +38,10 @@ import com.example.marketplacemain.marketplacemain.autenticacion.DTO.UserImageDT
 import com.example.marketplacemain.marketplacemain.autenticacion.DTO.VerifyDTO;
 import com.example.marketplacemain.marketplacemain.autenticacion.entities.User;
 import com.example.marketplacemain.marketplacemain.autenticacion.entities.Vendedor;
+import com.example.marketplacemain.marketplacemain.autenticacion.security.SetAuthUser;
 import com.example.marketplacemain.marketplacemain.autenticacion.services.JwtService;
 import com.example.marketplacemain.marketplacemain.autenticacion.services.UserService;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
@@ -68,8 +68,9 @@ public class UsuarioController {
         userCast.setEmail(user.getEmail());
         userCast.setNombre(user.getName());
         userCast.setPassword(user.getPassword());
+        service.save(userCast);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.save(userCast));
+        return ResponseEntity.status(HttpStatus.CREATED).body("ok");
     }
 
     @PostMapping("/updatedPassword")
@@ -79,7 +80,8 @@ public class UsuarioController {
             return validation(result);
         }
 
-        String username = getUsernameDeserialize(request);
+
+        String username = SetAuthUser.getUsernameDeserialize(request, jwtService);
 
         User newUserpassword = service.changePassword(username, user.getOldpassword(), user.getNewpassword());
 
@@ -114,18 +116,7 @@ public class UsuarioController {
         return create(user, result);
     }
 
-    protected String getUsernameDeserialize(HttpServletRequest request) {
-
-        String authorizationHeader = request.getHeader("Authorization");
-        String token = "your.jwt.token";
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            token = authorizationHeader.substring(7); // Quita "Bearer " del encabezado
-        }
-        String username = jwtService.extractUsername(token);
-
-        return username;
-    }
-
+    
     @PostMapping("/informacionGeneral")
     public ResponseEntity<?> informacionGeneral(HttpServletRequest request,
             @Valid @RequestBody InformacionGeneralDTO user, BindingResult result) {
@@ -133,8 +124,9 @@ public class UsuarioController {
         if (result.hasFieldErrors()) {
             return validation(result);
         }
+        
+        String username = SetAuthUser.getUsernameDeserialize(request, jwtService);
 
-        String username = getUsernameDeserialize(request);
 
         if (!username.equals(user.getEmail())) {
 
@@ -188,7 +180,7 @@ public class UsuarioController {
 
     @GetMapping("/example2")
     public ResponseEntity<?> example2(HttpServletRequest request) {
-        String username = getUsernameDeserialize(request);
+        String username = SetAuthUser.getUsernameDeserialize(request, jwtService);
 
         User user = service.getUserByEmail(username);
         
@@ -240,7 +232,8 @@ public class UsuarioController {
             @RequestParam("image") MultipartFile file) {
         try {
 
-            String username = getUsernameDeserialize(request);
+            String username = SetAuthUser.getUsernameDeserialize(request, jwtService);
+
 
             // Crear directorio si no existe
             String directory = uploadDir + File.separator + "user-images";
@@ -297,8 +290,6 @@ public class UsuarioController {
         String directory = uploadDir + File.separator + "user-images";
         Path dirPath = Paths.get(directory);
         
-        String username = getUsernameDeserialize(request);
-
         
         // Buscar archivo que comience con el userId
         try (Stream<Path> files = Files.list(dirPath)) {

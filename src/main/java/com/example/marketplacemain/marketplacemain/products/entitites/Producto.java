@@ -1,52 +1,70 @@
 package com.example.marketplacemain.marketplacemain.products.entitites;
 
-import com.example.marketplacemain.marketplacemain.autenticacion.entities.Vendedor;
+import java.util.Set;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import com.example.marketplacemain.marketplacemain.autenticacion.entities.Vendedor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
+@SQLRestriction("status <> 'deleted'")
 public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    private int id;
+    private Long id;
 
 
       // muchas facturas para un cliente 
     @ManyToOne
     //colocamos el nombre de nuestra base de datos
     @JoinColumn(name = "id_vendedor")
+    @JsonIgnoreProperties({"productos", "handler", "hibernateLazyInitializer", "descuentos", "atributos"})
+
     private Vendedor vendedor;
 
-    private int idSubcategoria;
+
+    @ManyToOne
+    @JoinColumn(name = "id_subcategoria")
+    @JsonIgnoreProperties({"productos", "handler", "hibernateLazyInitializer", "atributos"})
+
+    private Subcategoria subcategoria;
+
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy="producto")
+    @JsonIgnoreProperties({"producto", "handler", "hibernateLazyInitializer", "descuento", "caracteristicasTable"})
+    private Set<SubProducto> subproducto;
+
+    // private int idSubcategoria;
     private String titular;
     private String descripcionGeneral;
     private String fechaPublicacion;
     private String estadoAprobacion;
     private String status;
+    private String imagePortada;
     private String seo;
     private String fechaModificacion;
     private String marca;
     private Integer idMarca; // Campo opcional, por eso se usa Integer
-    public int getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
    
-    public int getIdSubcategoria() {
-        return idSubcategoria;
-    }
-    public void setIdSubcategoria(int idSubcategoria) {
-        this.idSubcategoria = idSubcategoria;
-    }
+   
     public String getTitular() {
         return titular;
     }
@@ -101,14 +119,44 @@ public class Producto {
     public void setIdMarca(Integer idMarca) {
         this.idMarca = idMarca;
     }
+    
     public Vendedor getVendedor() {
         return vendedor;
     }
     public void setVendedor(Vendedor vendedor) {
         this.vendedor = vendedor;
     }
+    public Subcategoria getSubcategoria() {
+        return subcategoria;
+    }
+    public void setSubcategoria(Subcategoria subcategoria) {
+        this.subcategoria = subcategoria;
+    }
+    public String getImagePortada() {
+        return imagePortada;
+    }
+    public void setImagePortada(String imagePortada) {
+        this.imagePortada = imagePortada;
+    }
+    public Set<SubProducto> getSubproducto() {
+        return subproducto;
+    }
+    public void setSubproducto(Set<SubProducto> subproducto) {
+        this.subproducto = subproducto;
+    }
 
+    // public Producto addSubproducto(SubProducto producto) {
+    //     subproducto.add(producto);
+    //     producto.setProducto(this);
+    //     return this;
+    // }
 
+    // public void removeSubproducto(SubProducto producto) {
+    //     this.getAtributos().remove(producto);
+    //     producto.setVendedor(null);
+    // }
+
+    
     
 
 }

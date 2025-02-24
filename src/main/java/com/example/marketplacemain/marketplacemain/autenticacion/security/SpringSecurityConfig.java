@@ -13,9 +13,13 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices.RememberMeTokenAlgorithm;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -52,7 +56,11 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/users/verificar").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/categorias/getAllcategorias").permitAll()
+                // .requestMatchers(HttpMethod.POST, "/api/SubProduct/subir").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/product/image/{path}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/SubProduct/image/{path}").permitAll()
+
+                
                 // .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
                 // .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/{id}").hasAnyRole("ADMIN", "USER")
                 // .requestMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
@@ -64,12 +72,12 @@ public class SpringSecurityConfig {
                 .csrf(config -> config.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                
                 .build();
-    }
+    } 
     
 
-
-   
+    
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

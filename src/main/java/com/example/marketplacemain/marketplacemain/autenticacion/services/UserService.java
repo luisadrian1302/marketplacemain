@@ -1,11 +1,9 @@
 package com.example.marketplacemain.marketplacemain.autenticacion.services;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +12,9 @@ import com.example.marketplacemain.marketplacemain.autenticacion.DTO.UserImageDT
 import com.example.marketplacemain.marketplacemain.autenticacion.DTO.VerifyDTO;
 import com.example.marketplacemain.marketplacemain.autenticacion.entities.Client;
 import com.example.marketplacemain.marketplacemain.autenticacion.entities.User;
-import com.example.marketplacemain.marketplacemain.autenticacion.entities.Vendedor;
 import com.example.marketplacemain.marketplacemain.autenticacion.repositories.UserRepositories;
+import com.example.marketplacemain.marketplacemain.autenticacion.services.TokenService.TokenData;
 
-import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 
 
@@ -47,6 +44,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtService jwtService;
+
       
     @Transactional
     public User save(User user)   {
@@ -66,9 +66,10 @@ public class UserService {
       
 
         System.out.println(user.getEmail() + " " + codigo.toString());
+        String token = TokenService.generateToken(user.getEmail(), user.getNombre());
         
         try {
-            emailService.enviarCorreo(user.getEmail(), "confirmacion de correo", codigo.toString() , "http://localhost:3000/confirmar");
+            emailService.enviarCorreo(user.getEmail(), "confirmacion de correo", codigo.toString() , "http://localhost:3000/confirmar/"+token);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -97,7 +98,12 @@ public class UserService {
     @Transactional 
     public User verificarUser(VerifyDTO verifyDTO){
 
-        List<User> users = repository.findByEmail(verifyDTO.getCorreo());
+        TokenData tokenData = TokenService.decryptToken(verifyDTO.getCorreo());
+        
+
+        System.out.println( verifyDTO.getCorreo());
+
+        List<User> users = repository.findByEmail(tokenData.getEmail());
 
         if (users.size() == 0) {
             return null;

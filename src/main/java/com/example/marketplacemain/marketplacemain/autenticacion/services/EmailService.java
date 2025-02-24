@@ -87,7 +87,7 @@ public class EmailService {
                         "            <h1>Confirmación de Cuenta</h1>\r\n" + //
                         "        </div>\r\n" + //
                         "        <div class=\"email-body\">\r\n" + //
-                        "            <p>Hola <strong>{nombreUsuario}</strong>,</p>\r\n" + //
+                        "            <p>Hola,</p>\r\n" + //
                         "            <p>¡Gracias por registrarte! Para completar el proceso de registro, por favor verifica tu correo electrónico usando el código de verificación a continuación:</p>\r\n" + //
                         "            <div class=\"verification-code\">"+ mensaje +"</div>\r\n" + //
                         "            <p>O haz clic en el siguiente enlace para confirmar tu cuenta:</p>\r\n" + //

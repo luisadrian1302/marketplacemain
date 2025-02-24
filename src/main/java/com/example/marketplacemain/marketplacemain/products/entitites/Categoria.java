@@ -3,7 +3,6 @@ package com.example.marketplacemain.marketplacemain.products.entitites;
 import java.util.Date;
 import java.util.Set;
 
-import com.example.marketplacemain.marketplacemain.autenticacion.entities.Vendedor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;

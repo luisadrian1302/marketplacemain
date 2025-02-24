@@ -2,6 +2,7 @@ package com.example.marketplacemain.marketplacemain.autenticacion.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
@@ -74,4 +75,9 @@ public class JwtService {
     public SecretKey getSecretKey() {
         return secretKey;
     }
+
+        // Generar token con el email y nombre
+   
+     // Decodificar token y extraer datos
+   
 }
