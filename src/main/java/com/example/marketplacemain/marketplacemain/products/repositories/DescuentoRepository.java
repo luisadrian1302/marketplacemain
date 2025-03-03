@@ -9,7 +9,7 @@ import com.example.marketplacemain.marketplacemain.products.entitites.Descuento;
 
 public interface DescuentoRepository extends CrudRepository<Descuento, Long> {
 
-    @Query("select d from Descuento d left join fetch d.vendedor where d.vendedor.id=?1 and d.fechaFinalDescuento  >= CURDATE()")
+    @Query("select d from Descuento d left join fetch d.vendedor where d.vendedor.id=?1 and d.fechaFinalDescuento  >= CURRENT_DATE")
     List<Descuento> findByIdVendedor(Long id);
 
 

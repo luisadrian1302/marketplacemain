@@ -16,7 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 
-@Entity
+@Entity(name = "usuario")
 public class User {
 
     @Id
@@ -26,9 +26,12 @@ public class User {
 
     @OneToOne(mappedBy = "usuario" , orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"usuario", "handler", "hibernateLazyInitializer"})
-        
-
     private Client client;
+
+
+    @OneToOne(mappedBy = "usuario" , orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"usuario", "handler", "hibernateLazyInitializer"})
+    private Employee employee;
 
     @OneToOne(mappedBy = "usuario" , orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"usuario", "handler", "hibernateLazyInitializer"})
@@ -268,7 +271,22 @@ public class User {
         this.tokenValue = tokenValue;
     }
 
-    
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+
+    public void setEmployee(Employee employee) {
+        employee.setUsuario(this);
+        this.employee = employee;
+        
+    }
+
+    public void removeEmployee(Employee employee) {
+        employee.setUsuario(null);
+        this.employee = null;
+    }
     
 
 

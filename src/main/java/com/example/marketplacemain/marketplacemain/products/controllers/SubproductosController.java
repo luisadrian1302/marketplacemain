@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -249,6 +250,8 @@ public class SubproductosController {
             subProducto.setStatus(1);
             subProducto.setStock(subproductoDTO.getCantidad()); 
             subProducto.setDescripcion(subproductoDTO.getDescripcion());
+            subProducto.setStatusValidacion(0);
+            subProducto.setFechaPublicacion(LocalDateTime.now());
 
             SubProducto subProductoSave = subproductoService.save(subProducto);
 
@@ -275,6 +278,7 @@ public class SubproductosController {
 
                 valor.setValor(atributo.getValor());
                 valor.setStatus((byte) 1);
+                valor.setFechaCreacion(LocalDateTime.now());
 
                 Valor valorsave = valorService.saveValor(valor);
 
@@ -288,6 +292,8 @@ public class SubproductosController {
                 caracteristicas.setColocarCaracteristicaPrincipal((byte) 1);
                 caracteristicas.setStatus((byte) 1);
                 caracteristicas.setSubProducto(subProductoSave);
+                caracteristicas.setFechaPublicacion(LocalDateTime.now());
+
                 Caracteristicas caracteristicas2 = caracteristicaService.save(caracteristicas);
                 caracteristicasList.add(caracteristicas2);
             }
@@ -480,6 +486,8 @@ public class SubproductosController {
 
             subProducto.getCaracteristicas().clear();
             subProducto.getCaracteristicasTable().clear();
+            subProducto.setFechaModificacion(LocalDateTime.now());
+
 
             SubProducto subProductoSave = subproductoService.save(subProducto);;
 
@@ -852,6 +860,92 @@ public class SubproductosController {
     }
 
 
+    @PostMapping("addDescuento/{id}")
+    @PreAuthorize("hasRole('ROLE_VENDEDOR')")
+    public ResponseEntity<?> colocarDescuentos( HttpServletRequest request,
+    @RequestBody String ids,  @PathVariable Long id) {
+
+
+        String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
+        User user = usuarioservice.getUserByEmail(email);
+
+        // subproductoService.verificarSubProductos();
+
+        // verificar si ese subproducto entra en los productos que el usuario tiene
+        Set<Producto> productos = user.getVendedor().getProductos();
+        Descuento descuento = descuentoService.getDescuentoById(id);
+        if (descuento ==  null) {
+            Map<String, String> valuesMap = new HashMap<>();
+            valuesMap.put("message", "No se encontro ese elemento");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
+        }
+
+
+        // Producto producto = productService.getById(id);
+        if (productos == null) {
+            
+            Map<String, String> valuesMap = new HashMap<>();
+            valuesMap.put("message", "No se encontro ese elemento");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
+        }
+
+        // obtener el descuento
+
+        // verificar si existe un producto con las mismas caracteristicas
+        JSONObject jsonObject = new JSONObject(ids);
+        String idsString = jsonObject.getString("ids");
+        JSONArray idsArray = new JSONArray(idsString);
+
+        for (int i = 0; i < idsArray.length(); i++) {
+            SubProducto subProducto = subproductoService.getById(idsArray.getLong(i));
+            subProducto.setDescuento(descuento);
+            subproductoService.save(subProducto);
+        }
+        
+        return ResponseEntity.ok().body("ok");
+    }
+
+
+    @PostMapping("removeDescount/{id}")
+    @PreAuthorize("hasRole('ROLE_VENDEDOR')")
+    public ResponseEntity<?> quitarDescuentos( HttpServletRequest request,
+    @RequestBody String ids,  @PathVariable Long id) {
+
+
+        String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
+        User user = usuarioservice.getUserByEmail(email);
+
+        // subproductoService.verificarSubProductos();
+
+        // verificar si ese subproducto entra en los productos que el usuario tiene
+        Set<Producto> productos = user.getVendedor().getProductos();
+      
+
+
+        // Producto producto = productService.getById(id);
+        if (productos == null) {
+            
+            Map<String, String> valuesMap = new HashMap<>();
+            valuesMap.put("message", "No se encontro ese elemento");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
+        }
+
+        // obtener el descuento
+
+        // verificar si existe un producto con las mismas caracteristicas
+        JSONObject jsonObject = new JSONObject(ids);
+        String idsString = jsonObject.getString("ids");
+        JSONArray idsArray = new JSONArray(idsString);
+
+        for (int i = 0; i < idsArray.length(); i++) {
+            SubProducto subProducto = subproductoService.getById(idsArray.getLong(i));
+            subProducto.setDescuento(null);
+            subproductoService.save(subProducto);
+        }
+        
+        return ResponseEntity.ok().body("ok");
+    }
+
     @GetMapping("getByUser")
     @PreAuthorize("hasRole('ROLE_VENDEDOR')")
     public ResponseEntity<?> getByUser( HttpServletRequest request) {
@@ -884,6 +978,7 @@ public class SubproductosController {
     }
 
 
+    
 
 
     @GetMapping("getByUserActive")
@@ -892,8 +987,6 @@ public class SubproductosController {
 
         String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
         User user = usuarioservice.getUserByEmail(email);
-
-      
 
         // verificar si ese subproducto entra en los productos que el usuario tiene
 
@@ -915,6 +1008,62 @@ public class SubproductosController {
         // obtener todos los subproductos 
         
         return ResponseEntity.ok().body(subproductoService.getAllActiveByUser(user.getVendedor().getId()));
+    }
+
+
+    @GetMapping("getByUserOutDescuento")
+    @PreAuthorize("hasRole('ROLE_VENDEDOR')")
+    public ResponseEntity<?> getByUserOutDescuento( HttpServletRequest request) {
+
+        String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
+        User user = usuarioservice.getUserByEmail(email);
+
+        // verificar si ese subproducto entra en los productos que el usuario tiene
+
+        Set<Producto> productos = user.getVendedor().getProductos();
+
+        // obtener producto por id
+
+        // Producto producto = productService.getById(id);
+        if (productos == null) {
+            
+            Map<String, String> valuesMap = new HashMap<>();
+            valuesMap.put("message", "No se encontro ese elemento");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
+        }
+        // actualizar los productos
+
+        subproductoService.verificarSubProductos();
+       
+        // obtener todos los subproductos 
+        
+        return ResponseEntity.ok().body(subproductoService.getAllByIDandOUTdiscount(user.getVendedor().getId()));
+    }
+
+    @GetMapping("getByUserandDescuento/{id}")
+    @PreAuthorize("hasRole('ROLE_VENDEDOR')")
+    public ResponseEntity<?> getByUserandDescuento( HttpServletRequest request, @PathVariable Long id) {
+
+        String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
+        User user = usuarioservice.getUserByEmail(email);
+
+
+        Set<Producto> productos = user.getVendedor().getProductos();
+
+        // Producto producto = productService.getById(id);
+        if (productos == null) {
+            
+            Map<String, String> valuesMap = new HashMap<>();
+            valuesMap.put("message", "No se encontro ese elemento");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
+        }
+        // actualizar los productos
+
+        subproductoService.verificarSubProductos();
+       
+        // obtener todos los subproductos 
+        
+        return ResponseEntity.ok().body(subproductoService.getAllByIdAndDescount(user.getVendedor().getId(), id));
     }
 
     @GetMapping("/image/{path}")

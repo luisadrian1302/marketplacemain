@@ -39,10 +39,10 @@ public class Atributo {
     @Column(nullable = false)
     private int privacidad;
 
-    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", updatable = false)
+    @Column(name = "fecha_creacion", columnDefinition = "DATETIME2 DEFAULT SYSDATETIME()", updatable = false)
     private LocalDateTime fechaCreacion;
 
-    @Column(name = "fecha_modificacion", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(name = "fecha_modificacion", columnDefinition = "DATETIME2 DEFAULT SYSDATETIME() ")
     private LocalDateTime fechaModificacion;
 
 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -105,6 +106,8 @@ public class ProductController {
                 // guardar el producto
 
                 producto.setImagePortada(urlImage);
+                producto.setFechaPublicacion( LocalDateTime.now());
+                
                 productService.save(producto);
 
                 // guardar la url
@@ -181,6 +184,8 @@ public class ProductController {
                 producto.setImagePortada(urlImage);
             }
             // guardar el producto
+
+            producto.setFechaModificacion( LocalDateTime.now());
 
             productService.save(producto);           
 

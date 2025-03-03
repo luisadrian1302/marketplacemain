@@ -36,6 +36,7 @@ import com.example.marketplacemain.marketplacemain.autenticacion.DTO.RegisterUse
 import com.example.marketplacemain.marketplacemain.autenticacion.DTO.UserChangePasswordDTO;
 import com.example.marketplacemain.marketplacemain.autenticacion.DTO.UserImageDTO;
 import com.example.marketplacemain.marketplacemain.autenticacion.DTO.VerifyDTO;
+import com.example.marketplacemain.marketplacemain.autenticacion.entities.Employee;
 import com.example.marketplacemain.marketplacemain.autenticacion.entities.User;
 import com.example.marketplacemain.marketplacemain.autenticacion.entities.Vendedor;
 import com.example.marketplacemain.marketplacemain.autenticacion.security.SetAuthUser;
@@ -196,11 +197,39 @@ public class UsuarioController {
 
     }
 
+    @GetMapping("/example3")
+    public ResponseEntity<?> example3(HttpServletRequest request) {
+        String username = SetAuthUser.getUsernameDeserialize(request, jwtService);
+
+        User user = service.getUserByEmail(username);
+        
+        Employee employee= new Employee();
+
+        employee.setBanned(false);
+        employee.setStatus(true);
+        user.setEmployee(employee);
+
+        service.save2(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("prueba de empleado creada, esta no es una funcion definitiva");
+
+    }
+
     @PreAuthorize("hasRole('ROLE_VENDEDOR')")
     @GetMapping("/isVendedor")
     public ResponseEntity<?> exavendedor() {
 
         return ResponseEntity.status(HttpStatus.CREATED).body("222");
+
+    }
+
+
+    
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    @GetMapping("/isEmployee")
+    public ResponseEntity<?> verificarEmpleado() {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("ok");
 
     }
 

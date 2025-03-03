@@ -9,7 +9,11 @@ import com.example.marketplacemain.marketplacemain.products.entitites.Producto;
 
 public interface ProductoRepository  extends CrudRepository<Producto, Long>{
 
-    @Query(value = "select count(id) as  'count' from subproducto where id_producto = ?1 and status <> 0;", nativeQuery = true)
-    List<Object[]>  findCountValue(Long id);
+    // @Query(value = "select count(id) as  'count' from subproducto where id_producto = ?1 and status <> 0;", nativeQuery = true)
+    // List<Object[]>  findCountValue(Long id);
+
+    @Query(value = "SELECT COUNT(id) as count FROM subproducto WHERE id_producto = ?1 AND status != 0", nativeQuery = true)
+    List<Object[]> findCountValue(Long id);
+
 
 }

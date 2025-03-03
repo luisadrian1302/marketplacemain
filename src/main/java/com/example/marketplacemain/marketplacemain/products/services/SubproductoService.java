@@ -33,6 +33,19 @@ public class SubproductoService {
     public List<SubProducto>  getAllActiveByUser(Long id){
         return subProductoRepository.findByIdUserActive(id);
     }
+
+    public List<SubProducto>  getAllByIDandOUTdiscount(Long id){
+        return subProductoRepository.findByUserSinDescuento(id);
+    }
+
+    public List<SubProducto>  getAllByIdAndDescount(Long id, Long iddescuento){
+        return subProductoRepository.findByUserCOnDescuentoEspecifico(id, iddescuento);
+    }
+
+    public List<SubProducto>  getAllByUser(Long id){
+        return subProductoRepository.findByIdUserActive(id);
+    }
+
     @Transactional
     public void verificarSubProductos(){
          subProductoRepository.verificarEstadoDescuento();

@@ -1,5 +1,7 @@
 package com.example.marketplacemain.marketplacemain.products.controllers;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,6 +118,9 @@ public class AtributoController {
         atributoOld.setEstatusValidacion((byte) 0);
         atributoOld.setPrivacidad(1);
         atributoOld.setStatus((byte) 1);
+        atributoOld.setFechaCreacion( LocalDateTime.now() );
+
+        // atributoOld.setFechaCreacion();
       
 
         Atributo nuevoAtributo = atributo.saveAtributo(atributoOld);

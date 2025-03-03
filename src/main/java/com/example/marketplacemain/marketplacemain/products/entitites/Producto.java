@@ -1,5 +1,6 @@
 package com.example.marketplacemain.marketplacemain.products.entitites;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.hibernate.annotations.SQLRestriction;
@@ -49,14 +50,16 @@ public class Producto {
     // private int idSubcategoria;
     private String titular;
     private String descripcionGeneral;
-    private String fechaPublicacion;
+    private LocalDateTime fechaPublicacion;
     private String estadoAprobacion;
     private String status;
     private String imagePortada;
     private String seo;
-    private String fechaModificacion;
+    private LocalDateTime fechaModificacion;
     private String marca;
-    private Integer idMarca; // Campo opcional, por eso se usa Integer
+    private Integer idMarca; 
+
+    
     public Long getId() {
         return id;
     }
@@ -77,12 +80,7 @@ public class Producto {
     public void setDescripcionGeneral(String descripcionGeneral) {
         this.descripcionGeneral = descripcionGeneral;
     }
-    public String getFechaPublicacion() {
-        return fechaPublicacion;
-    }
-    public void setFechaPublicacion(String fechaPublicacion) {
-        this.fechaPublicacion = fechaPublicacion;
-    }
+  
     public String getEstadoAprobacion() {
         return estadoAprobacion;
     }
@@ -101,12 +99,7 @@ public class Producto {
     public void setSeo(String seo) {
         this.seo = seo;
     }
-    public String getFechaModificacion() {
-        return fechaModificacion;
-    }
-    public void setFechaModificacion(String fechaModificacion) {
-        this.fechaModificacion = fechaModificacion;
-    }
+   
     public String getMarca() {
         return marca;
     }
@@ -143,6 +136,18 @@ public class Producto {
     }
     public void setSubproducto(Set<SubProducto> subproducto) {
         this.subproducto = subproducto;
+    }
+    public LocalDateTime getFechaPublicacion() {
+        return fechaPublicacion;
+    }
+    public void setFechaPublicacion(LocalDateTime fechaPublicacion) {
+        this.fechaPublicacion = fechaPublicacion;
+    }
+    public LocalDateTime getFechaModificacion() {
+        return fechaModificacion;
+    }
+    public void setFechaModificacion(LocalDateTime fechaModificacion) {
+        this.fechaModificacion = fechaModificacion;
     }
 
     // public Producto addSubproducto(SubProducto producto) {
