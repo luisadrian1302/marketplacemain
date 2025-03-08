@@ -24,10 +24,12 @@ public class SubProducto {
 
     @ManyToOne
     @JoinColumn(name = "id_producto")
+    @JsonIgnoreProperties({"subproducto", "handler", "hibernateLazyInitializer", "subcategoria"})
     private Producto producto;
 
     @ManyToOne
     @JoinColumn(name = "id_descuento")
+    @JsonIgnoreProperties({ "handler", "hibernateLazyInitializer","vendedor"})
     private Descuento descuento;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy="subProducto")
@@ -47,7 +49,7 @@ public class SubProducto {
     @Column(name = "multimedia")
     private String multimedia;
 
-    @Column(name = "descripcion")
+    @Column(name = "descripcion",  columnDefinition = "VARCHAR(MAX)")
     private String descripcion;
 
     @Column(name = "precio", nullable = false)

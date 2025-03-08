@@ -25,8 +25,16 @@ public class SubproductoService {
         return subProductoRepository.save(subProducto);
     }
 
+    @Transactional
+    public void deleteSubProductByObject(SubProducto subProducto){
+        subProductoRepository.delete(subProducto);
+    }
     public List<SubProducto>  getAllBySubcategoria(Long id){
         return subProductoRepository.findByIdProducto(id);
+    }
+
+    public List<SubProducto>  getAllBysubproductDisapprove(){
+        return subProductoRepository.findByproductsDisApprovated();
     }
 
 

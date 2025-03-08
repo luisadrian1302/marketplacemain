@@ -34,7 +34,7 @@ public class User {
     private Employee employee;
 
     @OneToOne(mappedBy = "usuario" , orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"usuario", "handler", "hibernateLazyInitializer"})
+    @JsonIgnoreProperties({"usuario", "handler", "hibernateLazyInitializer", "productos", "descuentos", "atributos"})
    
     private Vendedor vendedor;
 

@@ -1,10 +1,6 @@
-package com.example.marketplacemain.marketplacemain.products.controllers;
+package com.example.marketplacemain.marketplacemain.products.controllers.subproductos;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,19 +9,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,7 +34,7 @@ import com.example.marketplacemain.marketplacemain.autenticacion.services.JwtSer
 import com.example.marketplacemain.marketplacemain.autenticacion.services.UserService;
 import com.example.marketplacemain.marketplacemain.products.DTO.AtributoDTO;
 import com.example.marketplacemain.marketplacemain.products.DTO.CaracteristicaTablaDTO;
-import com.example.marketplacemain.marketplacemain.products.DTO.GetSubProductosDTO; 
+import com.example.marketplacemain.marketplacemain.products.DTO.GetSubProductosDTO;
 import com.example.marketplacemain.marketplacemain.products.DTO.SubproductoDTO;
 import com.example.marketplacemain.marketplacemain.products.DTO.ValorPropiedadDTO;
 import com.example.marketplacemain.marketplacemain.products.entitites.Atributo;
@@ -58,7 +52,12 @@ import com.example.marketplacemain.marketplacemain.products.services.DescuentoSe
 import com.example.marketplacemain.marketplacemain.products.services.ProductService;
 import com.example.marketplacemain.marketplacemain.products.services.SubproductoService;
 import com.example.marketplacemain.marketplacemain.products.services.ValorService;
+import com.example.marketplacemain.marketplacemain.products.services.validations.ValidationDiscountService;
+import com.example.marketplacemain.marketplacemain.products.services.validations.ValidationProductService;
+import com.example.marketplacemain.marketplacemain.products.services.validations.ValidationSubproductService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,15 +66,10 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
-
-@RequestMapping("api/SubProduct")
+@RequestMapping("api/SubProduct/seller")
 @RestController
-public class SubproductosController {
-    @Autowired
+public class SubProductSellerController {
+     @Autowired
     private AtributoService atributoService;
 
     @Autowired
@@ -106,7 +100,7 @@ public class SubproductosController {
 
     @PostMapping("/subir")
     @PreAuthorize("hasRole('ROLE_VENDEDOR')")
-    public ResponseEntity<?> subirImagenes(@RequestParam("imagenes") List<MultipartFile> imagenes,
+    public ResponseEntity<?> crearSubproducto(@RequestParam("imagenes") List<MultipartFile> imagenes,
     @RequestParam("caractertistica") String caractertistica, @RequestParam(value = "descuento",  required = false) Long descuento
     , @RequestParam("inforacionGeneral") String inforacionGeneral, @RequestParam("caracteristicaAll") String caracteristicaAll,
     @RequestParam("id_producto") Long id_producto, HttpServletRequest request ) {
@@ -125,7 +119,8 @@ public class SubproductosController {
 
             List<Caracteristicas> caracteristicasList = new ArrayList<Caracteristicas>();
             List<CaractertisticaTabla> caracteristicasTable = new ArrayList<CaractertisticaTabla>();
-            // comprobamos que no se 
+            // validar cantidad de imagenes
+            ValidationSubproductService.validateCantidadImages(imagenes);
             
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -156,11 +151,7 @@ public class SubproductosController {
             Boolean existProperyColor = false;
             Integer countCaracteristicasSimilares = 0;
 
-            if (atributos.size() < 2) {
-                Map<String, String> valuesMap = new HashMap<>();
-                valuesMap.put("message", "Coloque al menos dos caracteristicas principales al producto");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-            }
+            ValidationSubproductService.VerificarCaracteristicas(atributos);
 
             List<ValorPropiedadDTO> valorPropiedadDTOs = caracteristicaService.findValueValor(id_producto);
 
@@ -189,43 +180,17 @@ public class SubproductosController {
             }
 
             // verificar si el atributo obtenido realmente este color
-
-
-
-
-            System.out.println(countCaracteristicasSimilares);
             valorPropiedadDTOs.forEach(e->System.out.println(e.getTipoPropiedad()+ ": " + e.getValor()));
             elementosEncontrados.forEach(e->System.out.println(e));
 
-            
-            if (atributos.size() <= countCaracteristicasSimilares  || countCaracteristicasSimilares == 2 ) {
-                Map<String, String> valuesMap = new HashMap<>();
-                valuesMap.put("message", "Un subproducto ya tiene los mismos valores y atributos");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-            }
-            
-            if (elementosEncontrados.size() < 2  && valorPropiedadDTOs.size() > 0) {
-                Map<String, String> valuesMap = new HashMap<>();
-                valuesMap.put("message", "El subproducto requiere al menos dos caracteristicas similares de sus variantes");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-            }
-
+            ValidationSubproductService.isSubProductDuplicateCreateOrUpdate(atributos, countCaracteristicasSimilares);
+            ValidationSubproductService.checkTwoSimilarProperties(elementosEncontrados, valorPropiedadDTOs);
 
             // comparar que color exista en nuestra lista de elementos
             if (existProperyColor) {
-                Optional<AtributoDTO> getColor = atributos.stream().filter(element -> element.getTipo().toLowerCase().equals("color") ).findFirst();
-
-                if (getColor.isEmpty()) {
-                    Map<String, String> valuesMap = new HashMap<>();
-                    valuesMap.put("message", "Se detecto que un producto tiene un color, por favor asigne un color al producto");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-                }
-                
+                ValidationSubproductService.getColorExist(atributos);                
             }
-           
  
-            // crear caractertisticas medante atributos           
-
             // crear el subproducto
             SubProducto subProducto =new SubProducto();
             Set<Caracteristicas> setCaracteristicas = new HashSet<>(caracteristicasList);
@@ -260,17 +225,16 @@ public class SubproductosController {
             Integer counter = 0;
             for (MultipartFile imagen : imagenes) {
 
-                
                 String nombre_img = ImageHelper.uploadImage(uploadDir, subProductoSave.getId().toString()+"_"+counter.toString() , imagen, "subproducto");
-                nombresGuardados.add(nombre_img);
-
-                counter++;
-                System.out.println(imagen.getOriginalFilename());
-                
+                if (!nombre_img.equals("null")) {          
+                    nombresGuardados.add(nombre_img);
+                    counter++;                
+                }
             }
+            ValidationSubproductService.getNamesFilesAndDelete(nombresGuardados, subproductoService, subProductoSave);
+
 
             String nombresGuardado = objectMapper.writeValueAsString(nombresGuardados); //aqui vamos a guardar el subproducto
-            
             subProductoSave.setMultimedia(nombresGuardado);
             // aqui creamos el atributo
             for(AtributoDTO atributo : atributos){
@@ -281,7 +245,6 @@ public class SubproductosController {
                 valor.setFechaCreacion(LocalDateTime.now());
 
                 Valor valorsave = valorService.saveValor(valor);
-
                 // obtener los atributos
                 Atributo atributo2 = atributoService.getAtributoById(atributo.getId_atributo());
                 
@@ -307,18 +270,25 @@ public class SubproductosController {
                 caracteristicasTable.add(caractertisticaTabla2);
 
             }
-
-            // subProductoSave.setCaracteristicas(setCaracteristicas);
-            // subProductoSave.setCaracteristicasTable(setCaracteristicasTabla);
-
             subproductoService.save(subProductoSave);
                     
-            System.out.println(subproductoDTO);
             return ResponseEntity.ok("ok");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+
+        } catch (JsonMappingException e) {
+            Map<String, Object> body = new HashMap<>();
+            body.put("message", "Hubo un error en el servidor");
+            return ResponseEntity.badRequest().body(body);
+        }catch (JsonProcessingException e) {
+            Map<String, Object> body = new HashMap<>();
+            body.put("message", "Hubo un error en el servidor");
+            return ResponseEntity.badRequest().body(body);
         }
+        catch (IOException e) {
+            Map<String, Object> body = new HashMap<>();
+            body.put("message", "No se pudo guardar el elemento");
+            return ResponseEntity.badRequest().body(body);
+        }
+        
     }
 
 
@@ -329,14 +299,9 @@ public class SubproductosController {
     , @RequestParam("inforacionGeneral") String inforacionGeneral, @RequestParam("caracteristicaAll") String caracteristicaAll,
     @RequestParam("id_producto") Long id_producto, @RequestParam("id_subproducto") Long id_subproducto  ) {
         
-
         try {
-            
- 
             // comprobar que exista el tipo de valor color en un producto, si existe hay que comprobar si el usuario mando el color designado
             // comprobar que los
-          
-
             Producto producto = productService.getById(id_producto);
             List<SubProducto> subproductos = subproductoService.getAllBySubcategoria(id_producto);
 
@@ -344,7 +309,8 @@ public class SubproductosController {
             List<CaractertisticaTabla> caracteristicasTable = new ArrayList<CaractertisticaTabla>();
             // comprobamos que no se 
             
-         
+          // validar cantidad de imagenes
+            ValidationSubproductService.validateCantidadImages(imagenes);
 
             ObjectMapper objectMapper = new ObjectMapper();
             List<AtributoDTO> atributos = objectMapper.readValue(caractertistica, new TypeReference<List<AtributoDTO>>() {}); //aqui guardamos atributo y valor y tendra una caracteristica
@@ -371,12 +337,7 @@ public class SubproductosController {
 
             Boolean existProperyColor = false;
             Integer countCaracteristicasSimilares = 0;
-
-            if (atributos.size() < 2) {
-                Map<String, String> valuesMap = new HashMap<>();
-                valuesMap.put("message", "Coloque al menos dos caracteristicas principales al producto");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-            }
+            ValidationSubproductService.VerificarCaracteristicas(atributos);
 
             List<ValorPropiedadDTO> valorPropiedadDTOs = caracteristicaService.findValueValorByIDsubcategoria(id_producto, id_subproducto);
 
@@ -404,60 +365,21 @@ public class SubproductosController {
                 }
             }
 
-            // verificar si el atributo obtenido realmente este color
-
-
-
-
-            System.out.println(countCaracteristicasSimilares);
             valorPropiedadDTOs.forEach(e->System.out.println(e.getTipoPropiedad()+ ": " + e.getValor()));
             elementosEncontrados.forEach(e->System.out.println(e));
 
-            
-            if (atributos.size() <= countCaracteristicasSimilares  || countCaracteristicasSimilares == 2 ) {
-                Map<String, String> valuesMap = new HashMap<>();
-                valuesMap.put("message", "Un subproducto ya tiene los mismos valores y atributos");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-            }
-            System.out.println(valorPropiedadDTOs.size());
-            
-            if (elementosEncontrados.size() < 2 && valorPropiedadDTOs.size() > 0 ) {
-                Map<String, String> valuesMap = new HashMap<>();
-                valuesMap.put("message", "El subproducto requiere al menos dos caracteristicas similares de sus variantes");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-            }
+            ValidationSubproductService.isSubProductDuplicateCreateOrUpdate(atributos, countCaracteristicasSimilares);        
+            ValidationSubproductService.checkTwoSimilarProperties(elementosEncontrados, valorPropiedadDTOs);
 
 
             // comparar que color exista en nuestra lista de elementos
             if (existProperyColor) {
-                Optional<AtributoDTO> getColor = atributos.stream().filter(element -> element.getTipo().toLowerCase().equals("color") ).findFirst();
-
-                if (getColor.isEmpty()) {
-                    Map<String, String> valuesMap = new HashMap<>();
-                    valuesMap.put("message", "Se detecto que un producto tiene un color, por favor asigne un color al producto");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-                }
-                
+                ValidationSubproductService.getColorExist(atributos);
             }
            
- 
-
-        
-            // crear caractertisticas medante atributos
-
-
             // crear el subproducto
             SubProducto subProducto =subproductoService.getById(id_subproducto);
-
-            if (subProducto == null) {
-                
-                Map<String, String> valuesMap = new HashMap<>();
-                valuesMap.put("message", "No se encontro ese producto1");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-            }
-            Set<Caracteristicas> setCaracteristicas = new HashSet<>(caracteristicasList);
-            Set<CaractertisticaTabla> setCaracteristicasTabla = new HashSet<>(caracteristicasTable);
-
+            ValidationSubproductService.validateSubProductISNotEmpty(subProducto);
           
             subProducto.setDescripcion(subproductoDTO.getDescripcion());
             if (descuento != null) {
@@ -473,12 +395,6 @@ public class SubproductosController {
             subProducto.setTamañoAlto(subproductoDTO.getLargo());
             subProducto.setTamañoAncho(subproductoDTO.getAncho());
             subProducto.setProducto(producto);
-            // private Double precio;
-            // private Integer cantidad;
-            // private Double peso;
-            // private Double grosor;
-            // private Double largo;
-            // private Double ancho;
             subProducto.setPrecio(subproductoDTO.getPrecio());
             subProducto.setStatus(1);
             subProducto.setStock(subproductoDTO.getCantidad()); 
@@ -487,7 +403,6 @@ public class SubproductosController {
             subProducto.getCaracteristicas().clear();
             subProducto.getCaracteristicasTable().clear();
             subProducto.setFechaModificacion(LocalDateTime.now());
-
 
             SubProducto subProductoSave = subproductoService.save(subProducto);;
 
@@ -498,16 +413,18 @@ public class SubproductosController {
 
                 
                 String nombre_img = ImageHelper.uploadImage(uploadDir, subProductoSave.getId().toString()+"_"+counter.toString() , imagen, "subproducto");
-                nombresGuardados.add(nombre_img);
-
-                counter++;
-                System.out.println(imagen.getOriginalFilename());
-                
+                if (!nombre_img.equals("null")) {          
+                    nombresGuardados.add(nombre_img);
+                    counter++;                
+                }
             }
 
             String nombresGuardado = objectMapper.writeValueAsString(nombresGuardados); //aqui vamos a guardar el subproducto
 
-            subProductoSave.setMultimedia(nombresGuardado);
+            if (counter > 0) {
+                
+                subProductoSave.setMultimedia(nombresGuardado);
+            }
 
             // aqui creamos el atributo
             for(AtributoDTO atributo : atributos){
@@ -542,21 +459,22 @@ public class SubproductosController {
 
             }
 
-            // subProductoSave.setCaracteristicas(setCaracteristicas);
-            // subProductoSave.setCaracteristicasTable(setCaracteristicasTabla);
 
-            subproductoService.save(subProductoSave);
-            
-            
-          
- 
-
-            
-            System.out.println(subproductoDTO);
+            subproductoService.save(subProductoSave);      
             return ResponseEntity.ok("ok");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+        }  catch (JsonMappingException e) {
+            Map<String, Object> body = new HashMap<>();
+            body.put("message", "Hubo un error en el servidor");
+            return ResponseEntity.badRequest().body(body);
+        }catch (JsonProcessingException e) {
+            Map<String, Object> body = new HashMap<>();
+            body.put("message", "Hubo un error en el servidor");
+            return ResponseEntity.badRequest().body(body);
+        }
+        catch (IOException e) {
+            Map<String, Object> body = new HashMap<>();
+            body.put("message", "No se pudo guardar el elemento");
+            return ResponseEntity.badRequest().body(body);
         }
     }
 
@@ -569,28 +487,14 @@ public class SubproductosController {
         // quitar el decuento si este ya expiro
         subproductoService.verificarSubProductos();
 
-
         String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
         User user = usuarioservice.getUserByEmail(email);
         Set<Producto> productos = user.getVendedor().getProductos();
-
-            // obtener producto por id
-
-            // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese producto1");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
+       
+        ValidationProductService.validateProductsIsNotEmpty(productos);
 
         Optional<Producto> producto = productos.stream().filter((product) -> product.getId() == id ).findFirst();
-
-        if (!producto.isPresent()) {   
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese producto2");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
+        ValidationProductService.validateProductsIsNotPresent(producto);
 
         List<SubProducto> subProductos = subproductoService.getAllBySubcategoria(id);
         return ResponseEntity.ok().body(subProductos);
@@ -609,36 +513,15 @@ public class SubproductosController {
 
         // obtener subproducto
         SubProducto subProducto = subproductoService.getById(id);
-
-        if (subProducto == null) { 
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese subproducto");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
+        ValidationSubproductService.validateSubProductISNotEmpty(subProducto);
         // verificar si ese subproducto entra en los productos que el usuario tiene
-
         Set<Producto> productos = user.getVendedor().getProductos();
 
         // obtener producto por id
-
-        // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
+        ValidationProductService.validateProductsIsNotEmpty(productos);
         Optional<Producto> producto = productos.stream().filter((product) -> product.getId() == subProducto.getProducto().getId()).findFirst();
-
-        if (!producto.isPresent()) {   
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
-        
+        ValidationProductService.validateProductsIsNotPresent(producto);
+     
         return ResponseEntity.ok().body(subProducto);
     }
 
@@ -646,45 +529,20 @@ public class SubproductosController {
     @DeleteMapping("getById/{id}")
     @PreAuthorize("hasRole('ROLE_VENDEDOR')")
     public ResponseEntity<?> deleteByID( HttpServletRequest request, @PathVariable Long id) {
-
         String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
         User user = usuarioservice.getUserByEmail(email);
-
         // obtener subproducto
         SubProducto subProducto = subproductoService.getById(id);
-
-        if (subProducto == null) { 
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese subproducto");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
+        ValidationSubproductService.validateSubProductISNotEmpty(subProducto);
 
         // verificar si ese subproducto entra en los productos que el usuario tiene
-
         Set<Producto> productos = user.getVendedor().getProductos();
-
-        // obtener producto por id
-
-        // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
+        ValidationProductService.validateProductsIsNotEmpty(productos);
         Optional<Producto> producto = productos.stream().filter((product) -> product.getId() == subProducto.getProducto().getId()).findFirst();
-
-        if (!producto.isPresent()) {   
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
+        ValidationProductService.validateProductsIsNotPresent(producto);
         // actualizar el producto
         subProducto.setStatus(4);
         SubProducto saveSubProducto = subproductoService.save(subProducto);
-
         
         return ResponseEntity.ok().body(saveSubProducto);
     }
@@ -697,25 +555,11 @@ public class SubproductosController {
         User user = usuarioservice.getUserByEmail(email);
 
         // verificar si ese subproducto entra en los productos que el usuario tiene
-
         Set<Producto> productos = user.getVendedor().getProductos();
-
         // obtener producto por id
-
-        // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
-       
-        // actualizar el producto
+        ValidationProductService.validateProductsIsNotEmpty(productos);
          // actualizar valor
         subproductoService.updateByID(id, 0);
-
-        
         return ResponseEntity.ok().body("ok");
     }
 
@@ -728,40 +572,21 @@ public class SubproductosController {
         String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
         User user = usuarioservice.getUserByEmail(email);
 
-        subproductoService.verificarSubProductos(id);
-       
+        subproductoService.verificarSubProductos(id);   
 
         // verificar si ese subproducto entra en los productos que el usuario tiene
-
         Set<Producto> productos = user.getVendedor().getProductos();
 
         // obtener producto por id
-
-        // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
+        ValidationProductService.validateProductsIsNotEmpty(productos);
         // actualizar valor
         subproductoService.updateByID(id, 1);
-
         // obtener subproducto
         SubProducto subProducto = subproductoService.getById(id);
-        if (subProducto == null) { 
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese subproducto");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
+        ValidationSubproductService.validateSubProductISNotEmpty(subProducto);
         // verificar si existe un producto con las mismas caracteristicas
-
-
         List<ValorPropiedadDTO> valorPropiedadDTOsTotal = caracteristicaService.findValueValorByIDsubcategoria(subProducto.getProducto().getId(), subProducto.getId());
         List<ValorPropiedadDTO> valorPropiedadDTOsSubproduct = caracteristicaService.findValuesBySubproduct(subProducto.getProducto().getId(), subProducto.getId());
-
 
         Integer countCaracteristicasSimilares = 0;
         Set<String> elementosEncontrados = new HashSet<>();
@@ -780,32 +605,12 @@ public class SubproductosController {
                 }
             }
         }
-
-        if (valorPropiedadDTOsSubproduct.size() <= countCaracteristicasSimilares  || countCaracteristicasSimilares == 2 ) {
-            subproductoService.updateByID(id, 4);
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "Un subproducto ya tiene los mismos valores y atributos");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-        }
         
-        if (elementosEncontrados.size() < 2 && valorPropiedadDTOsTotal.size() > 0 ) {
-            subproductoService.updateByID(id, 4);
-
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "El subproducto requiere al menos dos caracteristicas similares de sus variantes");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-        }
-
-       
+        ValidationSubproductService.isSubProductDuplicate(valorPropiedadDTOsSubproduct, countCaracteristicasSimilares, subproductoService, id);
+        ValidationSubproductService.checkTwoSimilarProperties(elementosEncontrados, valorPropiedadDTOsTotal, subproductoService, id);  
 
         Optional<Producto> producto = productos.stream().filter((product) -> product.getId() == subProducto.getProducto().getId()).findFirst();
-
-        if (!producto.isPresent()) {   
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
+        ValidationSubproductService.validateProductsIsNotPresent(producto, subproductoService, id);
         
         return ResponseEntity.ok().body(subProducto);
     }
@@ -817,39 +622,21 @@ public class SubproductosController {
     public ResponseEntity<?> publicarProducto( HttpServletRequest request,
     @RequestBody String ids) {
 
-
         String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
         User user = usuarioservice.getUserByEmail(email);
-
-        // subproductoService.verificarSubProductos();
-
         // verificar si ese subproducto entra en los productos que el usuario tiene
         Set<Producto> productos = user.getVendedor().getProductos();
-
-
-        // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
-
-        // verificar si existe un producto con las mismas caracteristicas
+        ValidationProductService.validateProductsIsNotEmpty(productos);
 
         // Parseamos el JSON
         JSONObject jsonObject = new JSONObject(ids);
-
         // Extraemos el valor de la clave "ids" que es una cadena que representa un array
         String idsString = jsonObject.getString("ids");
-
         // Convertimos la cadena a un JSONArray
         JSONArray idsArray = new JSONArray(idsString);
 
         // Imprimimos el array convertido
         for (int i = 0; i < idsArray.length(); i++) {
-            System.out.println(idsArray.getString(i));
             SubProducto subProducto = subproductoService.getById(idsArray.getLong(i));
 
             subProducto.setStatusValidacion(2);
@@ -865,7 +652,6 @@ public class SubproductosController {
     public ResponseEntity<?> colocarDescuentos( HttpServletRequest request,
     @RequestBody String ids,  @PathVariable Long id) {
 
-
         String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
         User user = usuarioservice.getUserByEmail(email);
 
@@ -874,22 +660,9 @@ public class SubproductosController {
         // verificar si ese subproducto entra en los productos que el usuario tiene
         Set<Producto> productos = user.getVendedor().getProductos();
         Descuento descuento = descuentoService.getDescuentoById(id);
-        if (descuento ==  null) {
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
+        ValidationDiscountService.validateDiscountIsNotEmpty(descuento);
 
-
-        // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
-        // obtener el descuento
+        ValidationProductService.validateProductsIsNotEmpty(productos);
 
         // verificar si existe un producto con las mismas caracteristicas
         JSONObject jsonObject = new JSONObject(ids);
@@ -911,26 +684,11 @@ public class SubproductosController {
     public ResponseEntity<?> quitarDescuentos( HttpServletRequest request,
     @RequestBody String ids,  @PathVariable Long id) {
 
-
         String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
         User user = usuarioservice.getUserByEmail(email);
-
-        // subproductoService.verificarSubProductos();
-
         // verificar si ese subproducto entra en los productos que el usuario tiene
         Set<Producto> productos = user.getVendedor().getProductos();
-      
-
-
-        // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
-        // obtener el descuento
+        ValidationProductService.validateProductsIsNotEmpty(productos);
 
         // verificar si existe un producto con las mismas caracteristicas
         JSONObject jsonObject = new JSONObject(ids);
@@ -941,8 +699,7 @@ public class SubproductosController {
             SubProducto subProducto = subproductoService.getById(idsArray.getLong(i));
             subProducto.setDescuento(null);
             subproductoService.save(subProducto);
-        }
-        
+        }     
         return ResponseEntity.ok().body("ok");
     }
 
@@ -953,32 +710,16 @@ public class SubproductosController {
         String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
         User user = usuarioservice.getUserByEmail(email);
 
-      
-
-        // verificar si ese subproducto entra en los productos que el usuario tiene
-
         Set<Producto> productos = user.getVendedor().getProductos();
-
-        // obtener producto por id
-
         // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
+        ValidationProductService.validateProductsIsNotEmpty(productos);
         // actualizar los productos
-
         subproductoService.verificarSubProductos();
-       
         // obtener todos los subproductos 
         List<GetSubProductosDTO> subProductos = subproductoService.getByUser(user.getVendedor().getId());
         return ResponseEntity.ok().body(subProductos);
     }
 
-
-    
 
 
     @GetMapping("getByUserActive")
@@ -987,26 +728,12 @@ public class SubproductosController {
 
         String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
         User user = usuarioservice.getUserByEmail(email);
-
         // verificar si ese subproducto entra en los productos que el usuario tiene
-
         Set<Producto> productos = user.getVendedor().getProductos();
 
-        // obtener producto por id
-
         // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-        // actualizar los productos
-
+        ValidationProductService.validateProductsIsNotEmpty(productos);
         subproductoService.verificarSubProductos();
-       
-        // obtener todos los subproductos 
-        
         return ResponseEntity.ok().body(subproductoService.getAllActiveByUser(user.getVendedor().getId()));
     }
 
@@ -1014,29 +741,15 @@ public class SubproductosController {
     @GetMapping("getByUserOutDescuento")
     @PreAuthorize("hasRole('ROLE_VENDEDOR')")
     public ResponseEntity<?> getByUserOutDescuento( HttpServletRequest request) {
-
         String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
         User user = usuarioservice.getUserByEmail(email);
-
         // verificar si ese subproducto entra en los productos que el usuario tiene
-
         Set<Producto> productos = user.getVendedor().getProductos();
 
-        // obtener producto por id
-
-        // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
+        ValidationProductService.validateProductsIsNotEmpty(productos);
         // actualizar los productos
-
         subproductoService.verificarSubProductos();
-       
         // obtener todos los subproductos 
-        
         return ResponseEntity.ok().body(subproductoService.getAllByIDandOUTdiscount(user.getVendedor().getId()));
     }
 
@@ -1046,59 +759,16 @@ public class SubproductosController {
 
         String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
         User user = usuarioservice.getUserByEmail(email);
-
-
         Set<Producto> productos = user.getVendedor().getProductos();
 
         // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese elemento");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-        // actualizar los productos
-
+        ValidationProductService.validateProductsIsNotEmpty(productos);
         subproductoService.verificarSubProductos();
-       
         // obtener todos los subproductos 
-        
         return ResponseEntity.ok().body(subproductoService.getAllByIdAndDescount(user.getVendedor().getId(), id));
     }
 
-    @GetMapping("/image/{path}")
-    public ResponseEntity<Resource> getImage(@PathVariable String path, HttpServletRequest request) throws IOException {
-        // Construir la ruta donde se guarda la imagen
-        String directory = uploadDir + File.separator + "subproducto";
-        Path dirPath = Paths.get(directory);
-        
-        
-        // Buscar archivo que comience con el userId
-        try (Stream<Path> files = Files.list(dirPath)) {
-            Optional<Path> imageFile = files
-                .filter(file -> file.getFileName().toString().startsWith(path))
-                .findFirst();
-                
-            if (imageFile.isPresent()) {
-                Path file = imageFile.get();
-                Resource resource = new UrlResource(file.toUri());
-                
-                // Detectar el tipo de contenido (MIME type)
-                String contentType = Files.probeContentType(file);
-                if (contentType == null) {
-                    contentType = "application/octet-stream";
-                }
-                
-                return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFileName().toString() + "\"")
-                    .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        }
-    }
-
+    
     @GetMapping("/getAtributos/{id}")
     @PreAuthorize("hasRole('ROLE_VENDEDOR')")
     public ResponseEntity<?> getAtributos( HttpServletRequest request, @PathVariable Long id) {
@@ -1106,27 +776,13 @@ public class SubproductosController {
         String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
         User user = usuarioservice.getUserByEmail(email);
         Set<Producto> productos = user.getVendedor().getProductos();
-
-            // obtener producto por id
-
-            // Producto producto = productService.getById(id);
-        if (productos == null) {
-            
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese producto1");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
+         // Producto producto = productService.getById(id);
+        ValidationProductService.validateProductsIsNotEmpty(productos);
 
         Optional<Producto> producto = productos.stream().filter((product) -> product.getId() == id ).findFirst();
-
-        if (!producto.isPresent()) {   
-            Map<String, String> valuesMap = new HashMap<>();
-            valuesMap.put("message", "No se encontro ese producto2");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-        }
-
+        ValidationProductService.validateProductsIsNotPresent(producto);
         List<ValorPropiedadDTO> valorPropiedadDTOs = caracteristicaService.findValueValor(id);
-        
+
         return ResponseEntity.ok().body(valorPropiedadDTOs);
     }
     

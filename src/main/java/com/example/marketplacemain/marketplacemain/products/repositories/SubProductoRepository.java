@@ -62,7 +62,7 @@ public interface SubProductoRepository extends CrudRepository<SubProducto, Long>
 
     // funciones de vendedores
     
-    // @Query("select s from SubProducto s left join fetch s.producto  where s.producto.estadoAprobacion =?1 and s.statusValidacion = 0")
-    // List<SubProducto> findByproductsDisApprovated(Long status);
+    @Query("select s from SubProducto s left join fetch s.producto  where  s.statusValidacion = 2")
+    List<SubProducto> findByproductsDisApprovated();
    
 }
