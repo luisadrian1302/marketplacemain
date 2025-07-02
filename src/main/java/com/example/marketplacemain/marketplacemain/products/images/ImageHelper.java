@@ -10,31 +10,38 @@ import java.nio.file.StandardCopyOption;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-
 public class ImageHelper {
 
-     static public String uploadImage(String uploadDir, String email, MultipartFile file, String pathName) throws IOException {
+    static public String uploadImage(String uploadDir, String email, MultipartFile file, String pathName)
+            throws IOException {
 
-         // Crear directorio si no existe
-                String directory = uploadDir + File.separator + pathName;
-                Path uploadPath = Paths.get(directory);
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
+        // Crear directorio si no existe
+        String directory = uploadDir + File.separator + pathName;
+        Path uploadPath = Paths.get(directory);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
 
-                // Generar nombre único para el archivo
-                String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-                String newFileName = email + "." + fileExtension;
+        // Generar nombre único para el archivo
+        String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+        String newFileName = email + "." + fileExtension;
 
-                // Ruta completa del archivo
-                Path filePath = uploadPath.resolve(newFileName);
+        if (fileExtension.equalsIgnoreCase("jpg") || fileExtension.equalsIgnoreCase("png")) {
+            Path filePath = uploadPath.resolve(newFileName);
 
-                // Guardar archivo
-                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            // Guardar archivo
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                // Aquí podrías guardar la ruta en la base de datos
-                String imageUrl = "/"+ pathName+ "/" + newFileName;
-                return newFileName;
-     }
+            // Aquí podrías guardar la ruta en la base de datos
+            String imageUrl = "/" + pathName + "/" + newFileName;
+            return newFileName;
+        } else {
+            return "null";
+            // No hagas nada, simplemente ignoras el archivo sin mostrar error
+        }
+
+        // Ruta completa del archivo
+
+    }
 
 }

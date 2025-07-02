@@ -62,11 +62,19 @@ public class JpaUserDetailsService implements UserDetailsService{
             roles.add("ROLE_VENDEDOR"); // Es buena práctica usar el prefijo "ROLE_"
          }
 
+
+         //  verificar si el usuario es un empleado
+         
+
+         if (user.getEmployee() != null) {
+            roles.add("ROLE_EMPLOYEE"); // Es buena práctica usar el prefijo "ROLE_"
+         }
+
          
  
          // Convertir los roles a GrantedAuthority
          List<GrantedAuthority> authorities = roles.stream()
-                 .map(SimpleGrantedAuthority::new) // Uso de referencia de método
+                 .map(SimpleGrantedAuthority::new) 
                  .collect(Collectors.toList());
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), 

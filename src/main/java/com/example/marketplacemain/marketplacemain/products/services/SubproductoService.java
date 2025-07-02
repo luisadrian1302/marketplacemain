@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.marketplacemain.marketplacemain.products.DTO.GetSubProductosDTO;
+import com.example.marketplacemain.marketplacemain.products.DTO.ProductItem;
 import com.example.marketplacemain.marketplacemain.products.entitites.Atributo;
 import com.example.marketplacemain.marketplacemain.products.entitites.SubProducto;
 import com.example.marketplacemain.marketplacemain.products.repositories.SubProductoRepository;
@@ -25,14 +26,35 @@ public class SubproductoService {
         return subProductoRepository.save(subProducto);
     }
 
+    @Transactional
+    public void deleteSubProductByObject(SubProducto subProducto){
+        subProductoRepository.delete(subProducto);
+    }
     public List<SubProducto>  getAllBySubcategoria(Long id){
         return subProductoRepository.findByIdProducto(id);
+    }
+
+    public List<SubProducto>  getAllBysubproductDisapprove(){
+        return subProductoRepository.findByproductsDisApprovated();
     }
 
 
     public List<SubProducto>  getAllActiveByUser(Long id){
         return subProductoRepository.findByIdUserActive(id);
     }
+
+    public List<SubProducto>  getAllByIDandOUTdiscount(Long id){
+        return subProductoRepository.findByUserSinDescuento(id);
+    }
+
+    public List<SubProducto>  getAllByIdAndDescount(Long id, Long iddescuento){
+        return subProductoRepository.findByUserCOnDescuentoEspecifico(id, iddescuento);
+    }
+
+    public List<SubProducto>  getAllByUser(Long id){
+        return subProductoRepository.findByIdUserActive(id);
+    }
+
     @Transactional
     public void verificarSubProductos(){
          subProductoRepository.verificarEstadoDescuento();
@@ -81,6 +103,44 @@ public class SubproductoService {
         return subProductosDTOs;
     }
 
+
+    public List<ProductItem> getByLastOfter(Long limit){
+        List<Object[]> subproducto = subProductoRepository.findByUltimasOfertas(limit);
+
+        return ObjectToProductItem(subproducto);
+    }
+
+
+    public List<ProductItem> mejoresOfertas(Long limit){
+        List<Object[]> subproducto = subProductoRepository.findBymejoresOfertas(limit);
+        
+        return ObjectToProductItem(subproducto); 
+    }
+
+
+    public List<ProductItem> ultimosProductos(Long limit){
+        List<Object[]> subproducto = subProductoRepository.productosRecientes(limit);
+
+        
+        return ObjectToProductItem(subproducto);
+    }
+
+    
+    private List<ProductItem>  ObjectToProductItem (List<Object[]> subproducto ){
+        List<ProductItem> productsItem = new ArrayList<>();
+
+        for (int i = 0; i < subproducto.size(); i++) {
+        
+            ProductItem getSubProductoDTO = new ProductItem(
+            (String)  subproducto.get(i)[0], (Double) subproducto.get(i)[1], (Double) subproducto.get(i)[2], (Double)  subproducto.get(i)[3], 
+            (Long) subproducto.get(i)[4], (String) subproducto.get(i)[5],(String)   subproducto.get(i)[6], 
+            (Long)  subproducto.get(i)[7], (Long) subproducto.get(i)[8]);
+
+            productsItem.add(getSubProductoDTO);
+        }
+        return productsItem;
+
+    }
 
 
 

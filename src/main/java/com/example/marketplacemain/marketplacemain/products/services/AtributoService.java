@@ -26,6 +26,12 @@ public class AtributoService {
         return atributoRepository.findByIdSubcategoria(id);
     }
 
+
+    public List<Atributo>  getByIdSubAndName(Long id, String name, Long idAtributte){
+        return atributoRepository.findByNameAndID(id, name, idAtributte);
+    }
+
+
     public Atributo  getAtributoById(Long id){
         Optional<Atributo> atributo =  atributoRepository.findById(id);
 

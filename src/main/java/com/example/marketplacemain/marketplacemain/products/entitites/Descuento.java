@@ -1,6 +1,7 @@
 package com.example.marketplacemain.marketplacemain.products.entitites;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.hibernate.annotations.SQLRestriction;
 
@@ -14,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -49,6 +51,8 @@ public class Descuento {
 
     @Column(name = "fecha_publicacion")
     private LocalDate fechaPublicacion;
+
+    
 
 
     public Long getId() {

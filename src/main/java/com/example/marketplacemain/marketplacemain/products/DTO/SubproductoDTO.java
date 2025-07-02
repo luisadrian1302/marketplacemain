@@ -23,7 +23,7 @@ public class SubproductoDTO {
     private Double ancho;
 
 
-    @Size(min = 3, max = 50, message = "La descripcion debe tener entre 3 y 255 caracteres")
+    @Size(min = 3, max = 1000, message = "La descripcion debe tener entre 3 y 1000 caracteres")
     private String descripcion;
 
     // Constructor vacío (necesario para Jackson y otros frameworks)

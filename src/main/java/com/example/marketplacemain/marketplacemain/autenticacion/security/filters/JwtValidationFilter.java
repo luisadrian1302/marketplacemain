@@ -56,7 +56,6 @@ public class JwtValidationFilter extends BasicAuthenticationFilter{
             Claims claims = Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token).getPayload();
             String usename = claims.getSubject();
 
-            System.out.println(usename);
             // String usename2 = (String) claims.get("username");
             Object authoritiesClaims = claims.get("authorities");
 
@@ -78,7 +77,7 @@ public class JwtValidationFilter extends BasicAuthenticationFilter{
             response.getWriter().write(new ObjectMapper().writeValueAsString(body));
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType(CONTENT_TYPE);
-        }
+        } 
     }
 
 }

@@ -38,6 +38,13 @@ public class ProductService {
 
     }
 
+    @Transactional
+    public List<Producto> getAll()   {
+
+        return (List<Producto>) repository.findAll();
+        
+
+    }
     
     @Transactional
     public Long getCounValue(Long id)   {

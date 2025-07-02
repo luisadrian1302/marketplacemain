@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -39,6 +40,8 @@ import com.example.marketplacemain.marketplacemain.products.entitites.Subcategor
 import com.example.marketplacemain.marketplacemain.products.images.ImageHelper;
 import com.example.marketplacemain.marketplacemain.products.services.ProductService;
 import com.example.marketplacemain.marketplacemain.products.services.SubcategoriasService;
+import com.example.marketplacemain.marketplacemain.products.services.validations.ValidationProductService;
+import com.example.marketplacemain.marketplacemain.products.services.validations.ValidationSubcategoryService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -59,10 +62,10 @@ public class ProductController {
     @Autowired
     private JwtService jwtService;
 
-    @PostMapping("/actualizarProducto")
+    @PostMapping("/crearProducto")
     @PreAuthorize("hasRole('ROLE_VENDEDOR')")
 
-    public ResponseEntity<?> uploadImage(
+    public ResponseEntity<?> crearProducto(
             HttpServletRequest request,
             @RequestParam("titular") String titular,
             @RequestParam("descripcion") String descripcion,
@@ -83,14 +86,9 @@ public class ProductController {
                 producto.setDescripcionGeneral(descripcion);
                 producto.setStatus("disapproved");
                 // verificar si existe esa subcaategoria
-                Subcategoria subcategoria = subcategoriasService.getCategoria( subcategoriaid);
+                Subcategoria subcategoria = subcategoriasService.getsubCategoria( subcategoriaid);
 
-                if (subcategoria == null) {
-                    Map<String, String> valuesMap = new HashMap<>();
-                    valuesMap.put("message", "No se pudo crear este producto, no se encontró el id de la subcategoria");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-
-                }
+                ValidationSubcategoryService.validateProductsIsNotEmpty(subcategoria);
 
                 if (marca != null) {
                     producto.setMarca(marca);
@@ -105,13 +103,9 @@ public class ProductController {
                 // guardar el producto
 
                 producto.setImagePortada(urlImage);
-                productService.save(producto);
-
-                // guardar la url
+                producto.setFechaPublicacion( LocalDateTime.now());
                 
-
-               
-
+                productService.save(producto);
                 return ResponseEntity.ok().body(mensaje);
         }catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -125,7 +119,7 @@ public class ProductController {
 
 
 
-    @PostMapping("/actualizarProducto2")
+    @PostMapping("/actualizarProducto")
     @PreAuthorize("hasRole('ROLE_VENDEDOR')")
     public ResponseEntity<?> updateProducto(
         HttpServletRequest request,
@@ -148,29 +142,20 @@ public class ProductController {
             User user = usuarioservice.getUserByEmail(email);
             
             Optional<Producto> productoOpt = user.getVendedor().getProductos().stream().filter(product -> product.getId().equals(id)).findFirst();
-            if (!productoOpt.isPresent()) {
-                Map<String, String> valuesMap = new HashMap<>();
-                valuesMap.put("message", "No se pudo modificar este producto");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-
-            }
+            ValidationProductService.validateProductsIsNotPresent(productoOpt);
             Producto producto = productoOpt.get();
 
                // // verificar si existe esa subcaategoria
-            Subcategoria subcategoria = subcategoriasService.getCategoria( subcategoriaid);
-
-           
-
-            if (subcategoria == null) {
-                Map<String, String> valuesMap = new HashMap<>();
-                valuesMap.put("message", "No se pudo crear este producto, no se encontró el id de la subcategoria");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
-
-            }
+            Subcategoria subcategoria = subcategoriasService.getsubCategoria( subcategoriaid);
+            ValidationSubcategoryService.validateProductsIsNotEmpty(subcategoria);
 
             producto.setTitular(titular);
             producto.setDescripcionGeneral(descripcion);
-            producto.setSubcategoria(subcategoria);
+            // validar si existen elementos
+            if (producto.getSubproducto().size() == 0) {
+                
+                producto.setSubcategoria(subcategoria);
+            }
 
             if (marca != null) {
                 producto.setMarca(marca);
@@ -181,6 +166,7 @@ public class ProductController {
                 producto.setImagePortada(urlImage);
             }
             // guardar el producto
+            producto.setFechaModificacion( LocalDateTime.now());
 
             productService.save(producto);           
 
@@ -195,24 +181,16 @@ public class ProductController {
 
 
 
-
-
     @GetMapping("/verProductosPorUsuario")
     @PreAuthorize("hasRole('ROLE_VENDEDOR')")
     public ResponseEntity<?> getAllProductByUser(
         HttpServletRequest request
-      
- 
         ) {
             
             String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
             User user = usuarioservice.getUserByEmail(email);
             return ResponseEntity.ok().body(user.getVendedor().getProductos());
         }
-
-
-
-
     @DeleteMapping("/getProduct/{id}")
     @PreAuthorize("hasRole('ROLE_VENDEDOR')")
 
@@ -225,86 +203,64 @@ public class ProductController {
             String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
             User user = usuarioservice.getUserByEmail(email);
             Set<Producto> productos = user.getVendedor().getProductos();
-
-            // obtener producto por id
-
-            // Producto producto = productService.getById(id);
-            if (productos == null) {
-                
-                Map<String, String> valuesMap = new HashMap<>();
-                valuesMap.put("message", "No se encontro ese producto");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-            }
-
+            ValidationProductService.validateProductsIsNotEmpty(productos);
             Optional<Producto> producto = productos.stream().filter((product) -> product.getId() == id ).findFirst();
-
-            if (!producto.isPresent()) {
-                
-                Map<String, String> valuesMap = new HashMap<>();
-                valuesMap.put("message", "No se encontro ese producto");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-            }
-
-           
+            ValidationProductService.validateProductsIsNotPresent(producto);
 
             Producto producto2 =producto.get();
             Long count = productService.getCounValue(producto2.getId());
-            System.out.println(count);
-            if (count> 0) {
-                Map<String, String> valuesMap = new HashMap<>();
-                valuesMap.put("message", "Hay subproductos dentro del producto, elimine todos los subproductos para eliminar el producto");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-            }
+            
+            ValidationProductService.countValidation(count);
             producto2.setStatus("deleted");
 
             productService.save(producto2);
             return ResponseEntity.ok().body("ok");
         }
-
+ 
 
         @GetMapping("/getVendedor/{id}")
         @PreAuthorize("hasRole('ROLE_VENDEDOR')")
-    
         public ResponseEntity<?> getProduct(
             HttpServletRequest request, @PathVariable Long id
-          
-     
-            ) {
-                
+            ) {       
                 String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
                 User user = usuarioservice.getUserByEmail(email);
                 Set<Producto> productos = user.getVendedor().getProductos();
-    
-                // obtener producto por id
-    
                 // Producto producto = productService.getById(id);
-                if (productos == null) {
-                    
-                    Map<String, String> valuesMap = new HashMap<>();
-                    valuesMap.put("message", "No se encontro ese producto");
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-                }
+                ValidationProductService.validateProductsIsNotEmpty(productos);
     
                 Optional<Producto> producto = productos.stream().filter((product) -> product.getId() == id ).findFirst();
-    
-                if (!producto.isPresent()) {
-                    
-                    Map<String, String> valuesMap = new HashMap<>();
-                    valuesMap.put("message", "No se encontro ese producto");
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(valuesMap);
-                }
+                ValidationProductService.validateProductsIsNotPresent(producto);
                 return ResponseEntity.ok().body(producto.get());
             }
-    
-    
 
+        // registrar actividad del usuario y con esos datos sacar los productos relacionados 
+        // tarea mañana
+        // un endpoint ultimas ofertas
+        // un endpoint mejores ofertas
+        // un endpoint nuevos productos
+
+
+        // un endpoint mas vistos productos (relevantes)
+        // un endpoint de productos vistos similares vistos
+        // un endpoint de productos que posiblemente le interese (tendencias del dia)
+
+        // Machine learning?
+
+        // nota: la consulta sera para hacerlo lo mas efiente posible, se colocara el nombre, el precio, el descuento (si es que tiene) y sus atributos de forma simplificada
+        // solo traera el producto sin subproductos, cuando el usuario seleccione una opcion traera los datos relacionadas al icono que selecciono, nota: si solo selecciona uno
+        // debera motrar los posibles productos disponibles en esa opcion en la botonera de opciones y no debera ocultar ningun atrinuto simplemente los colocara de un color mas 
+        // opaco sin la necesidad de deshabilitarlo
+        // 
+
+        
+    
+ 
     @GetMapping("/image/{path}")
     public ResponseEntity<Resource> getImage(@PathVariable String path, HttpServletRequest request) throws IOException {
         // Construir la ruta donde se guarda la imagen
         String directory = uploadDir + File.separator + "product-images";
         Path dirPath = Paths.get(directory);
-        
-        
         // Buscar archivo que comience con el userId
         try (Stream<Path> files = Files.list(dirPath)) {
             Optional<Path> imageFile = files
@@ -330,7 +286,4 @@ public class ProductController {
             }
         }
     }
-
-
-
 }

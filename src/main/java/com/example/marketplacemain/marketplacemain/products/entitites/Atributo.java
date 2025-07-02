@@ -3,14 +3,11 @@ package com.example.marketplacemain.marketplacemain.products.entitites;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.SQLRestriction;
 
-import com.example.marketplacemain.marketplacemain.autenticacion.entities.Vendedor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "Atributo")
-@SQLRestriction("status = 1")
 public class Atributo {
 
     @Id
@@ -23,11 +20,6 @@ public class Atributo {
     private Subcategoria subcategoria;
 
 
-    @ManyToOne
-    @JoinColumn(name = "id_vendedor")
-    @JsonIgnoreProperties({"atributos", "handler", "hibernateLazyInitializer", "usuario", "productos", "descuentos"})
-    private Vendedor vendedor;
-
   
 
     @Column(nullable = false, length = 255)
@@ -39,10 +31,10 @@ public class Atributo {
     @Column(nullable = false)
     private int privacidad;
 
-    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", updatable = false)
+    @Column(name = "fecha_creacion", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     private LocalDateTime fechaCreacion;
 
-    @Column(name = "fecha_modificacion", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(name = "fecha_modificacion", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime fechaModificacion;
 
 
@@ -54,6 +46,8 @@ public class Atributo {
 
     @Column(nullable = false)
     private Byte status;
+
+    
 
 
 
@@ -81,16 +75,7 @@ public class Atributo {
 
 
 
-    public Vendedor getVendedor() {
-        return vendedor;
-    }
-
-
-
-    public void setVendedor(Vendedor vendedor) {
-        this.vendedor = vendedor;
-    }
-
+ 
 
 
     public String getNombre() {

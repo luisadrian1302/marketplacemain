@@ -6,7 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -36,11 +41,18 @@ import com.example.marketplacemain.marketplacemain.autenticacion.DTO.RegisterUse
 import com.example.marketplacemain.marketplacemain.autenticacion.DTO.UserChangePasswordDTO;
 import com.example.marketplacemain.marketplacemain.autenticacion.DTO.UserImageDTO;
 import com.example.marketplacemain.marketplacemain.autenticacion.DTO.VerifyDTO;
+import com.example.marketplacemain.marketplacemain.autenticacion.entities.DocumentacionCliente;
+import com.example.marketplacemain.marketplacemain.autenticacion.entities.Employee;
 import com.example.marketplacemain.marketplacemain.autenticacion.entities.User;
 import com.example.marketplacemain.marketplacemain.autenticacion.entities.Vendedor;
 import com.example.marketplacemain.marketplacemain.autenticacion.security.SetAuthUser;
+import com.example.marketplacemain.marketplacemain.autenticacion.services.DocumentacionClientService;
+import com.example.marketplacemain.marketplacemain.autenticacion.services.EmployeeService;
 import com.example.marketplacemain.marketplacemain.autenticacion.services.JwtService;
 import com.example.marketplacemain.marketplacemain.autenticacion.services.UserService;
+import com.example.marketplacemain.marketplacemain.autenticacion.validation.ValidationDocumentClient;
+import com.example.marketplacemain.marketplacemain.websockets.DTO.NotificacionDocumenttDTO;
+import com.example.marketplacemain.marketplacemain.websockets.controllers.NotificationController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -53,10 +65,19 @@ public class UsuarioController {
     private UserService service;
 
     @Autowired
+    private DocumentacionClientService dcService;
+
+    @Autowired
+    private EmployeeService employeeService;
+
+    @Autowired
     private JwtService jwtService;
 
     @Value("${app.upload.dir:${user.home}}")
     private String uploadDir;
+
+    @Autowired
+    private NotificationController webSocketController;
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody RegisterUserDTO user, BindingResult result) {
@@ -171,28 +192,52 @@ public class UsuarioController {
 
     }
 
-    @GetMapping("/example")
-    public ResponseEntity<?> example() {
+   
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("222");
+    // @GetMapping("/example2")
+    // public ResponseEntity<?> example2(HttpServletRequest request) {
+    //     String username = SetAuthUser.getUsernameDeserialize(request, jwtService);
+
+    //     User user = service.getUserByEmail(username);
+        
+    //     Vendedor vendedor= new Vendedor();
+
+    //     vendedor.setBanned(false);
+    //     vendedor.setStatus(true);
+    //     user.setVendedor(vendedor);
+
+    //     service.save2(user);
+
+    //     return ResponseEntity.status(HttpStatus.CREATED).body("prueba de vendedor creada, esta no es una funcion definitiva");
+
+    // }
+
+    @GetMapping("/example")
+    public ResponseEntity<?> example(HttpServletRequest request) {
+        String username = SetAuthUser.getUsernameDeserialize(request, jwtService);
+
+        User user = service.getUserByEmail(username);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("ok");
 
     }
 
-    @GetMapping("/example2")
-    public ResponseEntity<?> example2(HttpServletRequest request) {
+
+    @GetMapping("/example3")
+    public ResponseEntity<?> example3(HttpServletRequest request) {
         String username = SetAuthUser.getUsernameDeserialize(request, jwtService);
 
         User user = service.getUserByEmail(username);
         
-        Vendedor vendedor= new Vendedor();
+        Employee employee= new Employee();
 
-        vendedor.setBanned(false);
-        vendedor.setStatus(true);
-        user.setVendedor(vendedor);
+        employee.setBanned(false);
+        employee.setStatus(true);
+        user.setEmployee(employee);
 
         service.save2(user);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("prueba de vendedor creada, esta no es una funcion definitiva");
+        return ResponseEntity.status(HttpStatus.CREATED).body("prueba de empleado creada, esta no es una funcion definitiva");
 
     }
 
@@ -201,6 +246,16 @@ public class UsuarioController {
     public ResponseEntity<?> exavendedor() {
 
         return ResponseEntity.status(HttpStatus.CREATED).body("222");
+
+    }
+
+
+    
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    @GetMapping("/isEmployee")
+    public ResponseEntity<?> verificarEmpleado() {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("ok");
 
     }
 
@@ -224,6 +279,168 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
 
     }
+
+    @GetMapping("/getDocumentation")
+    public ResponseEntity<?> documentacionUser(HttpServletRequest request) {
+
+        String authorizationHeader = request.getHeader("Authorization");
+
+        String token = "your.jwt.token";
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Quita "Bearer " del encabezado
+
+        }
+        String username = jwtService.extractUsername(token);
+
+        User user = service.getUserByEmail(username);
+        
+
+        List<DocumentacionCliente> documentacionClientes = dcService.getByuse(user);
+
+        if (documentacionClientes.size() > 0) {
+            
+            DocumentacionCliente documentacionCliente = documentacionClientes.get(0);
+            return ResponseEntity.status(HttpStatus.CREATED).body(documentacionCliente);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(documentacionClientes);
+
+
+
+
+        // Decode without verification (for debugging)
+
+
+    }
+
+    @PostMapping("/uploadPdf")
+    public ResponseEntity<?> uploadPdf(
+            HttpServletRequest request, 
+            @RequestParam("pdf") MultipartFile file, @RequestParam String tipo) {
+        try {
+
+            Map<String, Object> response = new HashMap<>();
+            String username = SetAuthUser.getUsernameDeserialize(request, jwtService);
+
+            User user = service.getUserByEmail(username);
+        
+
+            List<DocumentacionCliente> documentacionClientes = dcService.getByuse(user);
+            DocumentacionCliente documentacionCliente = null;
+
+            if (documentacionClientes.size() > 0) {
+                
+                documentacionCliente = documentacionClientes.get(0);
+                
+            }else{
+                documentacionCliente = new DocumentacionCliente();
+                documentacionCliente.setUsuario(user);
+                documentacionCliente.setFechaCreacion(LocalDateTime.now());
+                
+            }
+            System.out.println(tipo);
+
+            if ( !tipo.equals("ine") && !tipo.equals("curp") && !tipo.equals("foto_real") ) {
+                response.put("message", "Ocurrio un error en el paso de parametros");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST); 
+            }   
+
+            // Crear directorio si no existe
+            String directory = uploadDir + File.separator + "user-documents" + File.separator + tipo;
+
+           
+
+            Path uploadPath = Paths.get(directory);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+             // Validar que sea un archivo PDF
+            if (!tipo.equals("foto_real") && !file.getContentType().equals("application/pdf")) {
+                response.put("message", "Solo se permiten archivos PDF");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+
+           
+            // Validar que sea un archivo JPG
+            if (tipo.equals("foto_real") && !file.getContentType().equals("image/jpeg")) {
+                response.put("message", "Solo se permiten archivos en JPG");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+
+
+            // Generar nombre único para el archivo
+            String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+            String newFileName = username + "." + fileExtension;
+
+            // Ruta completa del archivo
+            Path filePath = uploadPath.resolve(newFileName);
+
+            // Guardar archivo
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            String imageUrl = "/user-documents/" + tipo + "/" + newFileName;
+
+
+            if (tipo.equals("ine")) {
+                documentacionCliente.setIneFoto(imageUrl);
+                documentacionCliente.setStatusIne(2);
+            }
+            
+            if (tipo.equals("curp")) {
+                documentacionCliente.setImageCurp(imageUrl);
+                documentacionCliente.setStatusImageCurp(2);
+            }
+
+            if (tipo.equals("foto_real")) {
+                documentacionCliente.setFaceReal(imageUrl);
+                documentacionCliente.setStatusfaceReal(2);
+            }
+
+            // actualizar imagen del usuario
+
+            UserImageDTO userImageDTO = new UserImageDTO();
+
+            userImageDTO.setUrlImage(imageUrl);
+            userImageDTO.setUsername(username);
+
+
+            dcService.save(documentacionCliente);
+
+
+
+            // mandar notificacion a los empleados encargados de validar roles
+            List<Employee> employees = employeeService.getAll();
+
+            for(Employee employee: employees){
+                NotificacionDocumenttDTO notificacionDocumenttDTO = new NotificacionDocumenttDTO();
+                notificacionDocumenttDTO.setDescripcion("el usuario" + user.getNombre() + " " + user.getApellidos() + " a mandado el documento " + tipo + " para validarlo");
+                notificacionDocumenttDTO.setEmpleado(employee);
+                LocalDate hoy = LocalDate.now(ZoneId.of("America/Mexico_City"));
+                notificacionDocumenttDTO.setFechaInicio(hoy);
+                notificacionDocumenttDTO.setStatus((byte) 1);
+                notificacionDocumenttDTO.setTipo("Correcto");
+                notificacionDocumenttDTO.setTipoStatus(tipo);
+                notificacionDocumenttDTO.setTitulo("Aprobación de documentos");
+                notificacionDocumenttDTO.setUrl("/userDocuments/"+user.getId());
+                notificacionDocumenttDTO.setUrlImage(imageUrl);
+
+                webSocketController.sendMessageEmployeeDocument(username, "viewDocument", notificacionDocumenttDTO);
+
+
+            }
+
+            
+
+            return ResponseEntity.ok()
+                    .body(imageUrl);
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("No se pudo subir la imagen: " + e.getMessage());
+        }
+    }
+
 
     @PostMapping("/uploadImage")
     public ResponseEntity<?> uploadImage(
@@ -318,28 +535,51 @@ public class UsuarioController {
     }
 
 
-    // @GetMapping("/image/{path}")
-    // public ResponseEntity<byte[]> getImageAsBytes(@PathVariable String path) throws IOException {
-    //     String directory = uploadDir + File.separator + "user-images";
-    //     Path dirPath = Paths.get(directory);
+    // "/user-images/lm0336172@gmail.com.jpg"
+    @GetMapping("/user-images/{path}")
+    public ResponseEntity<Resource> getImagePublic(@PathVariable String path, HttpServletRequest request) throws IOException {
+        // Construir la ruta donde se guarda la imagen
+        String directory = uploadDir + File.separator + "user-images";
+        Path dirPath = Paths.get(directory);
         
-    //     try (Stream<Path> files = Files.list(dirPath)) {
-    //         Optional<Path> imageFile = files
-    //             .filter(file -> file.getFileName().toString().startsWith(path))
-    //             .findFirst();
+        
+        // Buscar archivo que comience con el userId
+        try (Stream<Path> files = Files.list(dirPath)) {
+            Optional<Path> imageFile = files
+                .filter(file -> file.getFileName().toString().startsWith(path))
+                .findFirst();
                 
-    //         if (imageFile.isPresent()) {
-    //             Path file = imageFile.get();
-    //             byte[] imageBytes = Files.readAllBytes(file);
-    //             String contentType = Files.probeContentType(file);
+            if (imageFile.isPresent()) {
+                Path file = imageFile.get();
+                Resource resource = new UrlResource(file.toUri());
                 
-    //             return ResponseEntity.ok()
-    //                 .contentType(MediaType.parseMediaType(contentType))
-    //                 .body(imageBytes);
-    //         } else {
-    //             return ResponseEntity.notFound().build();
-    //         }
-    //     }
-    // }
+                // Detectar el tipo de contenido (MIME type)
+                String contentType = Files.probeContentType(file);
+                if (contentType == null) {
+                    contentType = "application/octet-stream";
+                }
+                
+                return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFileName().toString() + "\"")
+                    .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        }
+    }
+    @GetMapping("/documetation/{id}")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    public ResponseEntity<?> getDocument(@PathVariable Long id, HttpServletRequest request){
+
+        DocumentacionCliente documentacionCliente = dcService.getById(id);
+        System.out.println(documentacionCliente);
+        ValidationDocumentClient.validateProductsIsNotPresent(documentacionCliente);
+
+        return ResponseEntity.ok().body(documentacionCliente);
+    
+    }
+
+   
 
 }

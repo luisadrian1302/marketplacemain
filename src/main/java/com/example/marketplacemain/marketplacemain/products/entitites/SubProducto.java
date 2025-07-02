@@ -24,10 +24,12 @@ public class SubProducto {
 
     @ManyToOne
     @JoinColumn(name = "id_producto")
+    @JsonIgnoreProperties({"subproducto", "handler", "hibernateLazyInitializer", "subcategoria", "vendedor"})
     private Producto producto;
 
     @ManyToOne
     @JoinColumn(name = "id_descuento")
+    @JsonIgnoreProperties({ "handler", "hibernateLazyInitializer","vendedor"})
     private Descuento descuento;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy="subProducto")
@@ -44,10 +46,10 @@ public class SubProducto {
     @Column(name = "foto_principal")
     private String fotoPrincipal;
 
-    @Column(name = "multimedia")
+    @Column(name = "multimedia" ,  columnDefinition = "TEXT")
     private String multimedia;
 
-    @Column(name = "descripcion")
+    @Column(name = "descripcion",  columnDefinition = "TEXT")
     private String descripcion;
 
     @Column(name = "precio", nullable = false)
@@ -56,14 +58,30 @@ public class SubProducto {
     @Column(name = "status", nullable = false)
     private Integer status;
 
-    @Column(name = "status_validacion", columnDefinition = "integer default 0")
+    @Column(name = "status_validacion")
     private Integer statusValidacion;
+
+    // @PrePersist
+    // public void prePersist() {
+    //     if (statusValidacion == null) {
+    //         statusValidacion = 0;  // Asigna 0 si no tiene valor
+    //     }
+    //     LocalDateTime now = LocalDateTime.now();
+    //     fechaPublicacion = now;  // Establece la fecha de creación si no está configurada
+    //     fechaModificacion = now; // 
+    // }
 
     @Column(name = "fecha_publicacion")
     private LocalDateTime fechaPublicacion;
 
     @Column(name = "fecha_modificacion")
     private LocalDateTime fechaModificacion;
+
+
+    @PreUpdate
+    public void preUpdate() {
+        fechaModificacion = LocalDateTime.now(); // Actualiza la fecha de modificación en cada actualización
+    }
 
     @Column(name = "modelo")
     private String modelo;
@@ -85,6 +103,8 @@ public class SubProducto {
 
     @Column(name = "stock", nullable = false)
     private Integer stock;
+
+    private Integer views;
 
     // Constructor vacío (requerido por JPA)
     public SubProducto() {}
@@ -318,6 +338,14 @@ public class SubProducto {
 
     public void setStatusValidacion(Integer statusValidacion) {
         this.statusValidacion = statusValidacion;
+    }
+
+    public Integer getViews() {
+        return views;
+    }
+
+    public void setViews(Integer views) {
+        this.views = views;
     }
 
 

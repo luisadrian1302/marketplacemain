@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   width="1729.1801"
+   height="1124.03"
+   id="svg1936"
+   sodipodi:version="0.32"
+   inkscape:version="0.45.1"
+   sodipodi:docname="Pirámide_de_Maslow.svg"
+   sodipodi:docbase="C:\Documents and Settings\HP_Administrator\Desktop"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/home/systembd/Descargas/Firefox/Imágenes/Maslow's_hierarchy_of_needs.png"
+   inkscape:export-xdpi="54.408882"
+   inkscape:export-ydpi="54.408882">
+  <metadata
+     id="metadata5584">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     inkscape:window-height="746"
+     inkscape:window-width="1024"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     guidetolerance="10.0"
+     gridtolerance="10.0"
+     objecttolerance="10.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base"
+     inkscape:zoom="0.35764169"
+     inkscape:cx="925.6017"
+     inkscape:cy="446.18055"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:current-layer="g1999"
+     width="1869.18px"
+     height="1224.03px" />
+  <defs
+     id="defs1938">
+    <linearGradient
+       id="linearGradient5561">
+      <stop
+         style="stop-color:white;stop-opacity:1"
+         offset="0"
+         id="stop5563" />
+      <stop
+         style="stop-color:#807eed;stop-opacity:1"
+         offset="1"
+         id="stop5565" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5597">
+      <stop
+         style="stop-color:white;stop-opacity:1"
+         offset="0"
+         id="stop5599" />
+      <stop
+         style="stop-color:#18fe04;stop-opacity:1"
+         offset="1"
+         id="stop5601" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5587">
+      <stop
+         style="stop-color:white;stop-opacity:1"
+         offset="0"
+         id="stop5589" />
+      <stop
+         style="stop-color:#fefc04;stop-opacity:1"
+         offset="1"
+         id="stop5591" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5577">
+      <stop
+         style="stop-color:white;stop-opacity:1"
+         offset="0"
+         id="stop5579" />
+      <stop
+         style="stop-color:#ff8207;stop-opacity:1"
+         offset="1"
+         id="stop5581" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2762">
+      <stop
+         style="stop-color:white;stop-opacity:1"
+         offset="0"
+         id="stop2764" />
+      <stop
+         style="stop-color:#f90909;stop-opacity:1"
+         offset="1"
+         id="stop2766" />
+    </linearGradient>
+    <radialGradient
+       cx="334.28568"
+       cy="439.51736"
+       r="262.46866"
+       fx="334.28568"
+       fy="439.51736"
+       id="radialGradient9273"
+       xlink:href="#linearGradient5561"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-1.134697,1.134697,-1.156074,-1.156074,1957.031,347.5224)" />
+    <radialGradient
+       cx="279.99408"
+       cy="530.66846"
+       r="263.681"
+       fx="279.99408"
+       fy="530.66846"
+       id="radialGradient9283"
+       xlink:href="#linearGradient5597"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-2.842556,2.842556,-2.463476,-2.463476,3172.792,661.2344)" />
+    <radialGradient
+       cx="279.99408"
+       cy="530.66846"
+       r="263.681"
+       fx="279.99408"
+       fy="530.66846"
+       id="radialGradient9291"
+       xlink:href="#linearGradient5587"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-3.449006,3.449006,-2.989051,-2.989051,3621.501,801.9635)" />
+    <radialGradient
+       cx="279.99408"
+       cy="530.66846"
+       r="263.681"
+       fx="279.99408"
+       fy="530.66846"
+       id="radialGradient9300"
+       xlink:href="#linearGradient5577"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-4.010533,4.010533,-3.475693,-3.475693,4036.971,932.2677)" />
+    <radialGradient
+       cx="279.99408"
+       cy="530.66846"
+       r="263.681"
+       fx="279.99408"
+       fy="530.66846"
+       id="radialGradient9312"
+       xlink:href="#linearGradient2762"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-4.56083,4.56083,-3.952603,-3.952603,4444.131,1059.966)" />
+    <radialGradient
+       cx="334.28568"
+       cy="439.51736"
+       r="262.46866"
+       fx="334.28568"
+       fy="439.51736"
+       id="radialGradient1956"
+       xlink:href="#linearGradient5561"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-1.134697,1.134697,-1.156074,-1.156074,1957.031,347.5224)" />
+    <radialGradient
+       cx="279.99408"
+       cy="530.66846"
+       r="263.681"
+       fx="279.99408"
+       fy="530.66846"
+       id="radialGradient1966"
+       xlink:href="#linearGradient5597"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-2.842556,2.842556,-2.463476,-2.463476,3172.792,661.2344)" />
+    <radialGradient
+       cx="279.99408"
+       cy="530.66846"
+       r="263.681"
+       fx="279.99408"
+       fy="530.66846"
+       id="radialGradient1974"
+       xlink:href="#linearGradient5587"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-3.449006,3.449006,-2.989051,-2.989051,3621.501,801.9635)" />
+    <radialGradient
+       cx="279.99408"
+       cy="530.66846"
+       r="263.681"
+       fx="279.99408"
+       fy="530.66846"
+       id="radialGradient1983"
+       xlink:href="#linearGradient5577"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-4.010533,4.010533,-3.475693,-3.475693,4036.971,932.2677)" />
+    <radialGradient
+       cx="279.99408"
+       cy="530.66846"
+       r="263.681"
+       fx="279.99408"
+       fy="530.66846"
+       id="radialGradient1989"
+       xlink:href="#linearGradient2762"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-4.56083,4.56083,-3.952603,-3.952603,4444.131,1059.966)" />
+  </defs>
+  <g
+     id="g1999">
+    <g
+       id="g2227">
+      <path
+         id="path1874"
+         style="fill:url(#radialGradient1989);fill-opacity:1;stroke:#000000;stroke-width:5.95470667;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1069.6036,4.5858812 L 1714.1962,1121.0529 L 425.01104,1121.0529 L 1069.6036,4.5858812 z " />
+      <path
+         id="path2898"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:6.07379913;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 426.14583,1120.6179 L 3.0364741,1120.6179" />
+      <path
+         id="path5573"
+         style="fill:url(#radialGradient1983);fill-opacity:1;stroke:#000000;stroke-width:5.95470428;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1069.6037,4.2265997 L 1636.4215,985.98392 L 502.78582,985.98389 L 1069.6037,4.2265997 z " />
+      <text
+         xml:space="preserve"
+         id="text2786"
+         style="font-size:23.81882095px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="907.10968"
+         x="1072.5439"><tspan
+           id="tspan2788"
+           style="font-size:40.49199295px;text-align:center;text-anchor:middle"
+           y="907.10968"
+           x="1078.9895">seguridad física, de empleo, de recursos, </tspan><tspan
+           id="tspan2848"
+           style="font-size:40.49199295px;text-align:center;text-anchor:middle"
+           y="957.72467"
+           x="1072.5439">moral, familiar, de salud, de propiedad privada</tspan></text>
+      <path
+         id="path2896"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:6.07379913;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1632.6356,984.46887 L 3.0364741,984.46887" />
+      <path
+         id="path5583"
+         style="fill:url(#radialGradient1974);fill-opacity:1;stroke:#000000;stroke-width:5.95470333;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1069.6038,3.860196 L 1557.0598,848.15874 L 582.14781,848.15872 L 1069.6038,3.860196 z " />
+      <text
+         xml:space="preserve"
+         id="text2794"
+         style="font-size:23.81882095px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="786.90826"
+         x="729.18872"><tspan
+           id="tspan2796"
+           style="font-size:40.49199295px"
+           y="786.90826"
+           x="729.18872">amistad, afecto, intimidad sexual</tspan></text>
+      <path
+         id="path2894"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:6.07379913;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1556.1562,850.01838 L 3.0364741,848.31984" />
+      <text
+         xml:space="preserve"
+         id="text2798"
+         style="font-size:64.30000305px;font-style:normal;font-weight:normal;fill:#18fe04;fill-opacity:1;stroke:#747474;stroke-width:1.19094098;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="687.5246"
+         x="2.6449854"><tspan
+           id="tspan2800"
+           y="687.5246"
+           x="2.6449854">Reconocimiento</tspan></text>
+      <path
+         id="path5593"
+         style="fill:url(#radialGradient1966);fill-opacity:1;stroke:#000000;stroke-width:5.95470381;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1069.6038,3.464222 L 1471.3488,699.307 L 667.85875,699.30699 L 1069.6038,3.464222 z " />
+      <text
+         sodipodi:linespacing="100%"
+         xml:space="preserve"
+         id="text2802"
+         style="font-size:40.49199295px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="594.01953"
+         x="1067.9675"><tspan
+           id="tspan2880"
+           style="font-size:40.49199295px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans"
+           y="594.01953"
+           x="1067.9675">autorreconocimiento,</tspan><tspan
+           id="tspan5607"
+           style="font-size:40.49199295px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans"
+           y="594.01953"
+           x="1067.9675" /><tspan
+           id="tspan5609"
+           style="font-size:40.49199295px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans"
+           y="594.01953"
+           x="1067.9675" /><tspan
+           id="tspan5611"
+           style="font-size:40.49199295px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans"
+           y="594.01953"
+           x="1067.9675" /><tspan
+           id="tspan5613"
+           style="font-size:40.49199295px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans"
+           y="594.01953"
+           x="1067.9675" /><tspan
+           id="tspan5615"
+           style="font-size:40.49199295px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans"
+           y="594.01953"
+           x="1067.9675" /><tspan
+           id="tspan5617"
+           style="font-size:40.49199295px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans"
+           y="594.01953"
+           x="1067.9675" /><tspan
+           id="tspan5619"
+           style="font-size:40.49199295px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans"
+           y="594.01953"
+           x="1067.9675" /></text>
+      <text
+         id="text5603"
+         xml:space="preserve"
+         style="font-size:23.81882095px;font-style:normal;font-weight:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="648.58661"
+         x="1059.6824"><tspan
+           id="tspan5605"
+           style="font-size:40.49199295px;text-align:center;text-anchor:middle"
+           y="648.58661"
+           x="1059.6824">confianza, respeto, éxito </tspan></text>
+      <path
+         id="path2892"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:5.95470524;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1467.1622,697.90466 L 3.0364741,699.6032" />
+      <text
+         sodipodi:linespacing="125%"
+         xml:space="preserve"
+         id="text2806"
+         style="font-size:64.30000305px;font-style:normal;font-weight:normal;line-height:125%;fill:#807eed;fill-opacity:1;stroke:#747474;stroke-width:1.19094098;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="509.53333"
+         x="4.9187059"><tspan
+           id="tspan2808"
+           y="509.53333"
+           x="4.9187059">Autorrealización</tspan></text>
+      <path
+         id="path4670"
+         style="fill:url(#radialGradient1956);fill-opacity:1;stroke:#000000;stroke-width:5.95470381;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1069.6034,2.9801776 L 1366.5903,517.37667 L 772.6164,517.37666 L 1069.6034,2.9801776 z " />
+      <text
+         xml:space="preserve"
+         id="text2810"
+         style="font-size:23.81882095px;font-style:normal;font-weight:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="233.57747"
+         x="1072.4858"><tspan
+           id="tspan2812"
+           style="font-size:40.49199295px;text-align:center;text-anchor:middle"
+           y="233.57747"
+           x="1072.4858">moralidad,</tspan><tspan
+           id="tspan2874"
+           style="font-size:40.49199295px;text-align:center;text-anchor:middle"
+           y="284.19244"
+           x="1072.4858">creatividad,</tspan><tspan
+           id="tspan2872"
+           style="font-size:40.49199295px;text-align:center;text-anchor:middle"
+           y="334.80746"
+           x="1072.4858">espontaneidad,</tspan><tspan
+           id="tspan2878"
+           style="font-size:40.49199295px;text-align:center;text-anchor:middle"
+           y="385.42245"
+           x="1072.4858">falta de prejuicios,</tspan><tspan
+           id="tspan2854"
+           style="font-size:40.49199295px;text-align:center;text-anchor:middle"
+           y="436.03745"
+           x="1072.4858">aceptación de hechos,</tspan><tspan
+           id="tspan2870"
+           style="font-size:40.49199295px;text-align:center;text-anchor:middle"
+           y="486.6524"
+           x="1072.4858">resolución de problemas</tspan></text>
+      <path
+         id="path2890"
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:6.07379913;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1366.7357,517.37295 L 3.0364741,519.46755" />
+      <text
+         xml:space="preserve"
+         id="text9318"
+         style="font-size:23.81882095px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="1072.7366"
+         x="504.02057"><tspan
+           id="tspan9320"
+           style="font-size:40.49199295px"
+           y="1072.7366"
+           x="504.02057">respiración, alimentación, descanso, sexo, homeostasis</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         xml:space="preserve"
+         id="text1991"
+         style="font-size:64.30000305px;font-style:normal;font-weight:normal;line-height:125%;fill:#ff8207;fill-opacity:1;stroke:#747474;stroke-width:1.19094098;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="966.80969"
+         x="4.8969936"><tspan
+           id="tspan1993"
+           y="966.80969"
+           x="4.8969936">Seguridad</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         xml:space="preserve"
+         id="text1995"
+         style="font-size:64.30000305px;font-style:normal;font-weight:normal;line-height:125%;fill:#f90909;fill-opacity:1;stroke:#747474;stroke-width:1.19094098;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="1101.9857"
+         x="2.8248258"><tspan
+           id="tspan1997"
+           y="1101.9857"
+           x="2.8248258">Fisiología</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         xml:space="preserve"
+         id="text2227"
+         style="font-size:64.30000305px;font-style:normal;font-weight:normal;line-height:125%;fill:#e9e715;fill-opacity:1;stroke:#747474;stroke-width:1.19094098;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="831.40253"
+         x="4.8650079"><tspan
+           style="fill:#e9e715;fill-opacity:1"
+           id="tspan2229"
+           y="831.40253"
+           x="4.8650079">Afiliación</tspan></text>
+    </g>
+  </g>
+</svg>
