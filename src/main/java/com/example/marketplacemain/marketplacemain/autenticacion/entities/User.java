@@ -17,7 +17,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 
 @Entity(name = "usuario")
-public class User {
+public class User { 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

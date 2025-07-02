@@ -14,10 +14,10 @@ public class Valor {
     @Column(nullable = false, length = 255)
     private String valor;
 
-    @Column(name = "fecha_creacion", columnDefinition = "DATETIME2 DEFAULT SYSDATETIME()", updatable = false)
+    @Column(name = "fecha_creacion", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     private LocalDateTime fechaCreacion;
 
-    @Column(name = "fecha_modificacion", columnDefinition = "DATETIME2 DEFAULT SYSDATETIME()")
+    @Column(name = "fecha_modificacion", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime fechaModificacion;
 
     @Column(nullable = false)

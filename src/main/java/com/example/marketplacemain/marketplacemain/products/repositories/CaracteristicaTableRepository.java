@@ -6,4 +6,5 @@ import com.example.marketplacemain.marketplacemain.products.entitites.Caracterti
 
 public interface CaracteristicaTableRepository  extends CrudRepository<CaractertisticaTabla, Long>{
 
+    
 }

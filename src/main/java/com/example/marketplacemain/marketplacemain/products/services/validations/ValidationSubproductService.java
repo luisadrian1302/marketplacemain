@@ -56,8 +56,10 @@ public class ValidationSubproductService {
     }
 
     public static void isSubProductDuplicateCreateOrUpdate(List<AtributoDTO> atributos, Integer countCaracteristicasSimilares){
+        // 3 < 2 = true
+        // 3 < 2 = true
      
-        if (atributos.size() <= countCaracteristicasSimilares  || countCaracteristicasSimilares == 2 ) {
+        if (atributos.size() <= countCaracteristicasSimilares ) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Un subproducto ya tiene los mismos valores y atributos");
         }
 

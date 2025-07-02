@@ -42,9 +42,7 @@ public class Vendedor {
     private Set<Descuento> descuentos;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy="vendedor")
-    @JsonIgnoreProperties({"vendedor", "handler", "hibernateLazyInitializer"})
-    private Set<Atributo> atributos;
+  
 
     public Long getId() {
         return id;
@@ -121,25 +119,8 @@ public class Vendedor {
         this.descuentos = descuento;
     }
 
-     public Vendedor addAtributo(Atributo producto) {
-        atributos.add(producto);
-        producto.setVendedor(this);
-        return this;
-    }
+   
 
-    public void removeAtributo(Atributo producto) {
-        this.getAtributos().remove(producto);
-        producto.setVendedor(null);
-    }
-
-    public Set<Atributo> getAtributos() {
-        return atributos;
-    }
-
-    public void setAtributos(Set<Atributo> atributos) {
-        this.atributos = atributos;
-    }
-    
-
+   
     
 }

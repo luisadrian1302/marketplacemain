@@ -24,7 +24,7 @@ public class SubProducto {
 
     @ManyToOne
     @JoinColumn(name = "id_producto")
-    @JsonIgnoreProperties({"subproducto", "handler", "hibernateLazyInitializer", "subcategoria"})
+    @JsonIgnoreProperties({"subproducto", "handler", "hibernateLazyInitializer", "subcategoria", "vendedor"})
     private Producto producto;
 
     @ManyToOne
@@ -46,10 +46,10 @@ public class SubProducto {
     @Column(name = "foto_principal")
     private String fotoPrincipal;
 
-    @Column(name = "multimedia")
+    @Column(name = "multimedia" ,  columnDefinition = "TEXT")
     private String multimedia;
 
-    @Column(name = "descripcion",  columnDefinition = "VARCHAR(MAX)")
+    @Column(name = "descripcion",  columnDefinition = "TEXT")
     private String descripcion;
 
     @Column(name = "precio", nullable = false)
@@ -103,6 +103,8 @@ public class SubProducto {
 
     @Column(name = "stock", nullable = false)
     private Integer stock;
+
+    private Integer views;
 
     // Constructor vacío (requerido por JPA)
     public SubProducto() {}
@@ -336,6 +338,14 @@ public class SubProducto {
 
     public void setStatusValidacion(Integer statusValidacion) {
         this.statusValidacion = statusValidacion;
+    }
+
+    public Integer getViews() {
+        return views;
+    }
+
+    public void setViews(Integer views) {
+        this.views = views;
     }
 
 

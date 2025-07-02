@@ -3,6 +3,8 @@ package com.example.marketplacemain.marketplacemain.products.entitites;
 import java.util.Date;
 import java.util.Set;
 
+import org.hibernate.annotations.SQLRestriction;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;

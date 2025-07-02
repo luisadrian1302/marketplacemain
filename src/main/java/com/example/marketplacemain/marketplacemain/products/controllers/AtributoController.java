@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +28,10 @@ import com.example.marketplacemain.marketplacemain.autenticacion.services.UserSe
 import com.example.marketplacemain.marketplacemain.products.entitites.Atributo;
 import com.example.marketplacemain.marketplacemain.products.entitites.Subcategoria;
 import com.example.marketplacemain.marketplacemain.products.services.AtributoService;
+import com.example.marketplacemain.marketplacemain.products.services.CaracteristicaService;
 import com.example.marketplacemain.marketplacemain.products.services.SubcategoriasService;
+import com.example.marketplacemain.marketplacemain.products.services.validations.ValidationAtributeService;
+import com.example.marketplacemain.marketplacemain.products.services.validations.ValidationSubcategoryService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -42,7 +46,11 @@ public class AtributoController {
     private SubcategoriasService subcategoriasService;
 
     @Autowired
-    private AtributoService atributo;
+    private AtributoService atributoService;
+
+
+    @Autowired
+    private CaracteristicaService caracteristicaService;
 
     @Autowired
     private JwtService jwtService;
@@ -60,18 +68,49 @@ public class AtributoController {
 
     @GetMapping("/getBySubcategoria/{id}")
     @PreAuthorize("hasRole('ROLE_VENDEDOR')")
-    public ResponseEntity<?> getMethodName(@PathVariable Long id, HttpServletRequest request) {
-        String email = SetAuthUser.getUsernameDeserialize(request, jwtService);
-        User user = usuarioservice.getUserByEmail(email);
-        List<Atributo> descuentos = atributo.getAllBySubcategoria(id);
-
-        return ResponseEntity.ok().body(descuentos);
+    public ResponseEntity<?> getByiDsUBCATEGORIA(@PathVariable Long id, HttpServletRequest request) {
+        List<Atributo> atributos = atributoService.getAllBySubcategoria(id);
+        return ResponseEntity.ok().body(atributos);
     }
     
 
+    @GetMapping("/getById/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_VENDEDOR', 'ROLE_EMPLOYEE')")
+    public ResponseEntity<?> getById(@PathVariable Long id, HttpServletRequest request) {
+        Atributo atributos = atributoService.getAtributoById(id);
+        return ResponseEntity.ok().body(atributos);
+    }
+    
+
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_VENDEDOR', 'ROLE_EMPLOYEE')")
+    public ResponseEntity<?> delete(@PathVariable Long id, HttpServletRequest request) {
+        Atributo atributo = atributoService.getAtributoById(id);
+        atributo.setStatus((byte) 0);
+        atributoService.saveAtributo(atributo);
+        return ResponseEntity.ok().body("ok");
+    }
+
+    @GetMapping("/active/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_VENDEDOR', 'ROLE_EMPLOYEE')")
+    public ResponseEntity<?> active(@PathVariable Long id, HttpServletRequest request) {
+        Atributo atributo = atributoService.getAtributoById(id);
+        atributo.setStatus((byte) 1);
+        atributoService.saveAtributo(atributo);
+
+        return ResponseEntity.ok().body("ok");
+    }
+
+
+    @GetMapping("/getAll")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    public ResponseEntity<?> getAll( HttpServletRequest request) {
+        return ResponseEntity.ok().body(atributoService.getAllDescuentos());
+    }
+
 
     @PostMapping("/crearAtributo")
-    @PreAuthorize("hasRole('ROLE_VENDEDOR')")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
 
     public ResponseEntity<?> createDescuento(   HttpServletRequest request, @Valid  @RequestBody AtributoDTO entity,  BindingResult result) {
 
@@ -91,7 +130,7 @@ public class AtributoController {
         atributoOld.setNombre(entity.getNombre());
         atributoOld.setTipoPropiedad(entity.getTipoPropiedad());
 
-        Subcategoria subcategoria = subcategoriasService.getCategoria(entity.getIdSubcategoria());
+        Subcategoria subcategoria = subcategoriasService.getsubCategoria(entity.getIdSubcategoria());
         if (subcategoria == null) {
             Map<String, String> valuesMap = new HashMap<>();
 
@@ -114,7 +153,6 @@ public class AtributoController {
         }
         atributoOld.setSubcategoria(subcategoria);
         atributoOld.setPrivacidad(1);
-        atributoOld.setVendedor(user.getVendedor());
         atributoOld.setEstatusValidacion((byte) 0);
         atributoOld.setPrivacidad(1);
         atributoOld.setStatus((byte) 1);
@@ -123,9 +161,65 @@ public class AtributoController {
         // atributoOld.setFechaCreacion();
       
 
-        Atributo nuevoAtributo = atributo.saveAtributo(atributoOld);
+        Atributo nuevoAtributo = atributoService.saveAtributo(atributoOld);
         
         return ResponseEntity.ok().body(nuevoAtributo);
+    }
+    
+
+
+    @PostMapping("/update/{id}")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+
+    public ResponseEntity<?> updateDescuento(   HttpServletRequest request, @Valid  @RequestBody AtributoDTO entity, 
+     BindingResult result, @PathVariable Long id) {
+
+        if (result.hasFieldErrors()) {
+            return validation(result);
+        }
+
+        Atributo atributoOld = atributoService.getAtributoById(id);
+        ValidationAtributeService.existCategoria(atributoOld);
+
+        Long countIds = caracteristicaService.getCountByAtributo(id);
+
+       
+
+        atributoOld.setNombre(entity.getNombre());
+        atributoOld.setTipoPropiedad(entity.getTipoPropiedad());
+
+        Subcategoria subcategoria = subcategoriasService.getsubCategoria(entity.getIdSubcategoria());
+        ValidationSubcategoryService.existCategoria(subcategoria);
+
+        // verificar que no exista un atributo con ese mismo nombre
+        List<Atributo> atributoVerify = atributoService.getByIdSubAndName(subcategoria.getId(), entity.getNombre(), id);
+
+        if (atributoVerify.size() > 0) {
+            Map<String, String> valuesMap = new HashMap<>();
+            valuesMap.put("message", "Ya existe un atributo con ese nombre, intentelo con otro");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(valuesMap);
+        }
+        if (countIds == 0) {
+            atributoOld.setSubcategoria(subcategoria);
+        }
+
+        atributoOld.setPrivacidad(1);
+        atributoOld.setEstatusValidacion((byte) 0);
+        atributoOld.setPrivacidad(1);
+        atributoOld.setStatus((byte) 1);
+        atributoOld.setFechaCreacion( LocalDateTime.now() ); 
+
+
+        Atributo nuevoAtributo = atributoService.saveAtributo(atributoOld);
+        return ResponseEntity.ok().body(nuevoAtributo);
+    }
+    
+
+    @GetMapping("/getCount/{id}")
+    @PreAuthorize("hasAnyRole( 'ROLE_EMPLOYEE' )")
+    public ResponseEntity<?> getCount(@PathVariable Long id, HttpServletRequest request) {
+        Long getId = caracteristicaService.getCountByAtributo(id);
+        return ResponseEntity.ok().body(getId);
     }
     
 

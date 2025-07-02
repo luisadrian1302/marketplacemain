@@ -59,8 +59,12 @@ public class SpringSecurityConfig {
                 // .requestMatchers(HttpMethod.POST, "/api/SubProduct/subir").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/product/image/{path}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/SubProduct/image/{path}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/SubProduct/public/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/resenas/public/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/caracteristicas/public/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/SubProduct/public/**").permitAll()
 
-                
+                .requestMatchers("/ws/**").permitAll() 
                 // .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
                 // .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/{id}").hasAnyRole("ADMIN", "USER")
                 // .requestMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
@@ -82,7 +86,7 @@ public class SpringSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(Arrays.asList("*"));
+        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "http://localhost:3001"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         config.setAllowCredentials(true);

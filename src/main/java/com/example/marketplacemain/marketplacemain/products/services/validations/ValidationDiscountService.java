@@ -17,6 +17,5 @@ public class ValidationDiscountService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontro el descuento.");
 
         }
-
     }
 }

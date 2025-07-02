@@ -28,7 +28,7 @@ public class Caracteristicas {
     @Column(nullable = false)
     private Byte status;
 
-    @Column(name = "fecha_publicacion", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", updatable = false)
+    @Column(name = "fecha_publicacion", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     private LocalDateTime fechaPublicacion;
 
     @Column(name = "colocar_caracteristica_principal", nullable = false)

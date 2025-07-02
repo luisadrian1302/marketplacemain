@@ -4,6 +4,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.Base64;
@@ -13,6 +18,9 @@ import static com.example.marketplacemain.marketplacemain.autenticacion.security
 
 @Service
 public class JwtService {
+
+    @Autowired
+    private JpaUserDetailsService jpaUserDetailsService;
 
     // Generate a secure key using HMAC-SHA256
     private final SecretKey secretKey = Jwts.SIG.HS256.key().build();
@@ -74,6 +82,15 @@ public class JwtService {
     // Método para obtener la SecretKey (si necesitas acceder a ella)
     public SecretKey getSecretKey() {
         return secretKey;
+    }
+
+
+    public Authentication getAuthentication(String token, String username) {
+
+        UserDetails userDetails = jpaUserDetailsService.loadUserByUsername(username);
+        
+        return new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
     }
 
         // Generar token con el email y nombre

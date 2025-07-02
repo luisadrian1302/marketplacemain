@@ -86,7 +86,7 @@ public class ProductController {
                 producto.setDescripcionGeneral(descripcion);
                 producto.setStatus("disapproved");
                 // verificar si existe esa subcaategoria
-                Subcategoria subcategoria = subcategoriasService.getCategoria( subcategoriaid);
+                Subcategoria subcategoria = subcategoriasService.getsubCategoria( subcategoriaid);
 
                 ValidationSubcategoryService.validateProductsIsNotEmpty(subcategoria);
 
@@ -146,12 +146,16 @@ public class ProductController {
             Producto producto = productoOpt.get();
 
                // // verificar si existe esa subcaategoria
-            Subcategoria subcategoria = subcategoriasService.getCategoria( subcategoriaid);
+            Subcategoria subcategoria = subcategoriasService.getsubCategoria( subcategoriaid);
             ValidationSubcategoryService.validateProductsIsNotEmpty(subcategoria);
 
             producto.setTitular(titular);
             producto.setDescripcionGeneral(descripcion);
-            producto.setSubcategoria(subcategoria);
+            // validar si existen elementos
+            if (producto.getSubproducto().size() == 0) {
+                
+                producto.setSubcategoria(subcategoria);
+            }
 
             if (marca != null) {
                 producto.setMarca(marca);
@@ -229,9 +233,29 @@ public class ProductController {
                 ValidationProductService.validateProductsIsNotPresent(producto);
                 return ResponseEntity.ok().body(producto.get());
             }
-    
-    
 
+        // registrar actividad del usuario y con esos datos sacar los productos relacionados 
+        // tarea mañana
+        // un endpoint ultimas ofertas
+        // un endpoint mejores ofertas
+        // un endpoint nuevos productos
+
+
+        // un endpoint mas vistos productos (relevantes)
+        // un endpoint de productos vistos similares vistos
+        // un endpoint de productos que posiblemente le interese (tendencias del dia)
+
+        // Machine learning?
+
+        // nota: la consulta sera para hacerlo lo mas efiente posible, se colocara el nombre, el precio, el descuento (si es que tiene) y sus atributos de forma simplificada
+        // solo traera el producto sin subproductos, cuando el usuario seleccione una opcion traera los datos relacionadas al icono que selecciono, nota: si solo selecciona uno
+        // debera motrar los posibles productos disponibles en esa opcion en la botonera de opciones y no debera ocultar ningun atrinuto simplemente los colocara de un color mas 
+        // opaco sin la necesidad de deshabilitarlo
+        // 
+
+        
+    
+ 
     @GetMapping("/image/{path}")
     public ResponseEntity<Resource> getImage(@PathVariable String path, HttpServletRequest request) throws IOException {
         // Construir la ruta donde se guarda la imagen
